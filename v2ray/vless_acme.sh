@@ -40,7 +40,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
     [
         {
             "port": 443,"protocol": "vless",
-            "settings": {"clients": [{"id": "$v2my_uuid","flow": "xtls-rprx-origin"}],"decryption": "none","fallbacks": [{"dest": 80}]},
+            "settings": {"clients": [{"id": "$v2my_uuid","flow": "xtls-rprx-direct"}],"decryption": "none","fallbacks": [{"dest": 80}]},
             "streamSettings": {"security": "xtls","xtlsSettings": {"alpn": ["http/1.1"],"certificates": [{"certificateFile": "/usr/local/etc/v2ray/v2ray.crt","keyFile": "/usr/local/etc/v2ray/v2ray.key"}]}}
         }
     ],
@@ -75,7 +75,7 @@ cat <<EOF >$TMPFILE
         {
             "protocol": "vless",
             "tag": "v2my_$domain",
-            "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$v2my_uuid","flow": "xtls-rprx-origin","encryption": "none"}]}]},
+            "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$v2my_uuid","flow": "xtls-rprx-direct","encryption": "none"}]}]},
             "streamSettings": {"security": "xtls","xtlsSettings": {"serverName": "$domain"}}
         },
 
