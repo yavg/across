@@ -118,7 +118,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "settings": {"method": "$ssmethod","password": "$sspassword","network": "tcp,udp"},
             "streamSettings": {"security": "none","network": "domainsocket","dsSettings": {"path": "apath","abstract": true}}
         },
-        {"port": 9876,"listen": "127.0.0.1","protocol": "socks","settings": {"udp": true}}
+        {"port": 9876,"listen": "127.0.0.1","tag": "naiveproxyupstream","protocol": "socks","settings": {"udp": true}}
     ],
     "outbounds": 
     [
