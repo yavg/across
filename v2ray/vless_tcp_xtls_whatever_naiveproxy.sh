@@ -185,7 +185,10 @@ $(date) v2ray client outbounds config info:
             "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$v2my_uuid"}]}]},
             "streamSettings": {"network": "ws","security": "tls","tlsSettings": {"serverName": "$domain"},"wsSettings": {"path": "/$vmesswspath","headers": {"Host": "$domain"}}}
         },
-        
+
+$(date) shadowsocks info:   
+ss://$(echo "${ssmethod}:${sspassword}" | base64 | tr "\n" " " | sed s/[[:space:]]//g | tr -- "+/=" "-_ " | sed -e 's/ *$//g')@${domain}:443?plugin=v2ray-plugin%3Bpath%3D%2F${sswspath}%3Bhost%3D${domain}%3Btls#shadowsocks_ws_${domain}
+
 $(date) naiveproxy info:
 username: $username
 password: $password
