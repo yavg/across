@@ -139,6 +139,8 @@ systemctl enable v2ray && systemctl restart v2ray && sleep 1 && systemctl status
 
 # info
 cat <<EOF >$TMPFILE
+		$(date) v2ray client outbounds config info:
+
         {
             "protocol": "vless",
             "tag": "vless_tcp_$domain",
@@ -166,9 +168,13 @@ cat <<EOF >$TMPFILE
             "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$v2my_uuid"}]}]},
             "streamSettings": {"network": "ws","security": "tls","tlsSettings": {"serverName": "$domain"},"wsSettings": {"path": "/$vmesswspath","headers": {"Host": "$domain"}}}
         },
+		
+		$(date) naiveproxy info:
+		username: $username
+		password: $password
+		probe_resistance: $probe_resistance
+		proxy: https://$username:$password@$domain
 EOF
 
-echo; echo $(date) v2ray client outbounds config info:
 cat $TMPFILE
-echo; echo $(date) naiveproxy info:; echo username: $username; echo password: $password; echo probe_resistance: $probe_resistance; echo proxy: https://$username:$password@$domain
 # done
