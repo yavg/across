@@ -20,6 +20,7 @@ vmesswspath="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
 ssmethod="none"
 sspassword="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
 sswspath="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
+ssbase64info="$(echo -n "${ssmethod}:${sspassword}" | base64 | tr "\n" " " | sed s/[[:space:]]//g | tr -- "+/=" "-_ " | sed -e 's/ *$//g')"
 ########
 
 # caddy install 
@@ -187,7 +188,7 @@ $(date) v2ray client outbounds config info:
         },
 
 $(date) shadowsocks info:   
-echo "ss://$(echo "${ssmethod}:${sspassword}" | base64 | tr "\n" " " | sed s/[[:space:]]//g | tr -- "+/=" "-_ " | sed -e 's/ *$//g')@${domain}:443?plugin=v2ray-plugin%3Bpath%3D%2F${sswspath}%3Bhost%3D${domain}%3Btls#shadowsocks_ws_${domain}"
+ss://${ssbase64info}@${domain}:443?plugin=v2ray-plugin%3Bpath%3D%2F${sswspath}%3Bhost%3D${domain}%3Btls#${domain}
 
 $(date) naiveproxy info:
 username: $username
