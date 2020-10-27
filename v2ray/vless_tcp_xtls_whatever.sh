@@ -120,7 +120,6 @@ cat <<EOF >$TMPFILE
             "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$v2my_uuid"}]}]},
             "streamSettings": {"network": "ws","security": "tls","tlsSettings": {"serverName": "$domain"},"wsSettings": {"path": "/$vmesswspath","headers": {"Host": "$domain"}}}
         },
-
 EOF
 
 echo; echo $(date) v2ray client outbounds config info:
