@@ -50,7 +50,8 @@ cat <<EOF >/etc/caddy/Caddyfile.json
                             "hide_via": true,
                             "auth_user": "$username",
                             "auth_pass": "$password",
-                            "probe_resistance": {"domain": "$probe_resistance"}
+                            "probe_resistance": {"domain": "$probe_resistance"},
+                            "upstream": "socks5://127.0.0.1:4567"
                         }]
                     },{
                         "handle": [{
@@ -101,7 +102,8 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "port": 3456,"listen": "127.0.0.1","protocol": "vmess",
             "settings": {"clients": [{"id": "$v2my_uuid"}]},
             "streamSettings": {"network": "ws","security": "none","wsSettings": {"acceptProxyProtocol": true,"path": "/$vmesswspath"}}
-        }
+        },
+        {"port": 4567,"listen": "127.0.0.1","protocol": "socks","settings": {"udp": true}}
     ],
     "outbounds": 
     [
