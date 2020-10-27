@@ -140,7 +140,6 @@ systemctl enable v2ray && systemctl restart v2ray && sleep 1 && systemctl status
 # info
 cat <<EOF >$TMPFILE
 $(date) v2ray client outbounds config info:
-
         {
             "protocol": "vless",
             "tag": "vless_tcp_$domain",
