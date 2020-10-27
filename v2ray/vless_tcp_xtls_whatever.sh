@@ -92,7 +92,7 @@ echo; echo $(date) v2ray status:
 systemctl enable v2ray && systemctl restart v2ray && sleep 1 && systemctl status v2ray | more | grep -A 2 "v2ray.service"
 
 # info
-echo; echo $(date) v2ray client config info:
+echo; echo $(date) v2ray client outbounds config info:
 cat <<EOF >$TMPFILE
         {
             "protocol": "vless",
