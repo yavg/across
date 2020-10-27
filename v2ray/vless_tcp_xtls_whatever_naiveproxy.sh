@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export PATH
 
-# Tips: 个人使用 仅供参考 当前配置 https://github.com/v2fly/v2ray-examples/tree/master/VLESS-TCP-XTLS-WHATEVER + ss + naiveproxy
+# Tips: 个人使用 仅供参考 当前配置 https://github.com/v2fly/v2ray-examples/tree/master/VLESS-TCP-XTLS-WHATEVER + ss+v2ray-plugin + naiveproxy
 ## 部分配置参考：https://github.com/lxhao61/integrated-examples
 # install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/vless_tcp_xtls_whatever_naiveproxy.sh) my.domain.com CF_Key CF_Email
 # uninstall: apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray; /root/.acme.sh/acme.sh --uninstall
@@ -184,13 +184,6 @@ $(date) v2ray client outbounds config info:
             "tag": "vmess_ws_$domain",
             "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$v2my_uuid"}]}]},
             "streamSettings": {"network": "ws","security": "tls","tlsSettings": {"serverName": "$domain"},"wsSettings": {"path": "/$vmesswspath","headers": {"Host": "$domain"}}}
-        },
-        
-        {
-            "protocol": "vmess",
-            "tag": "shadowsocks_ws_$domain",
-            "settings": {"servers":[{"address": "$domain","port": 443,"method": "$ssmethod","password": "$sspassword"}]},
-            "streamSettings": {"network": "ws","security": "tls","tlsSettings": {"serverName": "$domain"},"wsSettings": {"path": "/$sswspath","headers": {"Host": "$domain"}}}
         },
         
 $(date) naiveproxy info:
