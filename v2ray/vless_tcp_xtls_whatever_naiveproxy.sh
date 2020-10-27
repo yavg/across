@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export PATH
 
-# Tips: 个人使用 仅供参考 当前配置 https://github.com/v2fly/v2ray-examples/tree/master/VLESS-TCP-XTLS-WHATEVER + naiveproxy
+# Tips: 个人使用 仅供参考 当前配置 https://github.com/v2fly/v2ray-examples/tree/master/VLESS-TCP-XTLS-WHATEVER + ss + naiveproxy
 ## 部分配置参考：https://github.com/lxhao61/integrated-examples
 # install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/vless_tcp_xtls_whatever_naiveproxy.sh) my.domain.com CF_Key CF_Email
 # uninstall: apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray; /root/.acme.sh/acme.sh --uninstall
@@ -17,6 +17,9 @@ xtlsflow="xtls-rprx-direct"
 vlesswspath="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
 vmesstcppath="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
 vmesswspath="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
+ssmethod="none"
+sspassword="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
+sswspath="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
 ########
 
 # caddy install 
@@ -29,7 +32,7 @@ rm -rf /usr/bin/caddy
 wget --no-check-certificate -O - $naivecaddyURL | gzip -d > /usr/bin/caddy && chmod +x /usr/bin/caddy
 sed -i "s/caddy\/Caddyfile$/caddy\/Caddyfile\.json/g" /lib/systemd/system/caddy.service
 
-# caddy secrets
+# caddy naiveproxy secrets
 username="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
 password="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
 probe_resistance="$(tr -dc 'a-z0-9' </dev/urandom | head -c 32).com"
@@ -52,7 +55,7 @@ cat <<EOF >/etc/caddy/Caddyfile.json
                             "auth_user": "$username",
                             "auth_pass": "$password",
                             "probe_resistance": {"domain": "$probe_resistance"},
-                            "upstream": "socks5://127.0.0.1:4567"
+                            "upstream": "socks5://127.0.0.1:9876"
                         }]
                     },{
                         "handle": [{
@@ -84,7 +87,8 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
                     {"dest": 80,"xver": 0},
                     {"path": "/$vlesswspath","dest": 1234,"xver": 1},
                     {"path": "/$vmesstcppath","dest": 2345,"xver": 1},
-                    {"path": "/$vmesswspath","dest": 3456,"xver": 1}
+                    {"path": "/$vmesswspath","dest": 3456,"xver": 1},
+                    {"path": "/$sswspath","dest": 4567,"xver": 0}
                 ]
             },
             "streamSettings": {"network": "tcp","security": "xtls","xtlsSettings": {"alpn": ["h2","http/1.1"],"certificates": [{"certificateFile": "/usr/local/etc/v2ray/v2ray.crt","keyFile": "/usr/local/etc/v2ray/v2ray.key"}]}}
@@ -104,20 +108,33 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "settings": {"clients": [{"id": "$v2my_uuid"}]},
             "streamSettings": {"network": "ws","security": "none","wsSettings": {"acceptProxyProtocol": true,"path": "/$vmesswspath"}}
         },
-        {"port": 4567,"listen": "127.0.0.1","protocol": "socks","settings": {"udp": true}}
+        {
+            "port": "4567","listen": "127.0.0.1","tag": "onetag","protocol": "dokodemo-door",
+            "settings": {"address": "v1.mux.cool","network": "tcp","followRedirect": false},
+            "streamSettings": {"security": "none","network": "ws","wsSettings": {"path": "/$sswspath"}}
+        },
+        {
+            "port": 7654,"listen": "127.0.0.1","protocol": "shadowsocks",
+            "settings": {"method": "$ssmethod","password": "$sspassword","network": "tcp,udp"},
+            "streamSettings": {"security": "none","network": "domainsocket","dsSettings": {"path": "apath","abstract": true}}
+        },
+        {"port": 9876,"listen": "127.0.0.1","protocol": "socks","settings": {"udp": true}}
     ],
     "outbounds": 
     [
         {"protocol": "freedom","tag": "direct","settings": {}},
-        {"protocol": "blackhole","tag": "blocked","settings": {}}
+        {"protocol": "blackhole","tag": "blocked","settings": {}},
+        {"protocol": "freedom","tag": "twotag","streamSettings": {"network": "domainsocket","dsSettings": {"path": "apath","abstract": true}}}
     ],
 
     "routing": 
     {
         "rules": 
         [
+            {"type": "field","inboundTag": ["onetag"],"outboundTag": "twotag"},
             {"type": "field","outboundTag": "blocked","ip": ["geoip:private"]},
             {"type": "field","outboundTag": "blocked","domain": ["geosite:private","geosite:category-ads-all"]}
+            
         ]
     }
 }
@@ -167,6 +184,13 @@ $(date) v2ray client outbounds config info:
             "tag": "vmess_ws_$domain",
             "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$v2my_uuid"}]}]},
             "streamSettings": {"network": "ws","security": "tls","tlsSettings": {"serverName": "$domain"},"wsSettings": {"path": "/$vmesswspath","headers": {"Host": "$domain"}}}
+        },
+        
+        {
+            "protocol": "vmess",
+            "tag": "shadowsocks_ws_$domain",
+            "settings": {"servers":[{"address": "$domain","port": 443,"method": "$ssmethod","password": "$sspassword"}]},
+            "streamSettings": {"network": "ws","security": "tls","tlsSettings": {"serverName": "$domain"},"wsSettings": {"path": "/$sswspath","headers": {"Host": "$domain"}}}
         },
         
 $(date) naiveproxy info:
