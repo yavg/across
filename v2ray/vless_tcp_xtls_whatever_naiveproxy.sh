@@ -187,7 +187,7 @@ $(date) v2ray client outbounds config info:
         },
 
 $(date) shadowsocks info:   
-ss://$(echo "${ssmethod}:${sspassword}" | base64 | tr "\n" " " | sed s/[[:space:]]//g | tr -- "+/=" "-_ " | sed -e 's/ *$//g')@${domain}:443?plugin=v2ray-plugin%3Bpath%3D%2F${sswspath}%3Bhost%3D${domain}%3Btls#shadowsocks_ws_${domain}
+echo "ss://$(echo "${ssmethod}:${sspassword}" | base64 | tr "\n" " " | sed s/[[:space:]]//g | tr -- "+/=" "-_ " | sed -e 's/ *$//g')@${domain}:443?plugin=v2ray-plugin%3Bpath%3D%2F${sswspath}%3Bhost%3D${domain}%3Btls#shadowsocks_ws_${domain}"
 
 $(date) naiveproxy info:
 username: $username
