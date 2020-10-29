@@ -7,7 +7,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export 
 # uninstall : apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; /root/.acme.sh/acme.sh --uninstall; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray /root/.acme.sh  
 
 ####
-#截取传入参数uuid作为各配置所需参数部署服务端，只需uuid和vps对应域名即可得到所有客户端参数，uuid务必妥善保存
+#截取传入参数uuid作为各配置所需参数部署服务端，只需uuid和vps对应域名即可得到所有客户端参数，自用uuid务必妥善保存，如有分享需求，建议生成一个分享专用的uuid
 #1. uuid第一部分对应vless+ws的路径参数 2. uuid即为trojan的密码 3. uuid最后部分对应ss+ws的路径参数 4. uuid第一和最后部分分别对应naiveproxy的账号密码 5. 其它参看输出信息
 ####
 
