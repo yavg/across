@@ -1,27 +1,18 @@
 #!/usr/bin/env bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export PATH
 
-# Tips: https://github.com/v2fly/v2ray-examples/tree/master/VLESS-TCP-XTLS-WHATEVER + trojan + ss+v2ray-plugin + naiveproxy  
+# Tips: vless + trojan + ss+v2ray-plugin + naiveproxy | uuid=$(cat /proc/sys/kernel/random/uuid)
 # integrated-examples：https://github.com/lxhao61/integrated-examples  
-# install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/vless_tcp_xtls_whatever_naiveproxy.sh) cloudflare_Email_Address cloudflare_Global_API_Key my.domain.com
+# install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/v2ray_whatever_uuid.sh) cloudflare_Email_Address cloudflare_Global_API_Key uuid my.domain.com
 # uninstall : apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; /root/.acme.sh/acme.sh --uninstall; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray /root/.acme.sh  
 
 # tempfile & rm it when exit
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
 
 ########
-[[ $# != 3 ]] && echo Err !!! Useage: bash this_script.sh cloudflare_Email_Address cloudflare_Global_API_Key my.domain.com && exit 1
-export CF_Email="$1" && export CF_Key="$2" && domain="$3"
-v2my_uuid=$(cat /proc/sys/kernel/random/uuid)
-xtlsflow="xtls-rprx-direct"
-trojanpassword="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
-vlesswspath="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
-vmesstcppath="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
-vmesswspath="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
-ssmethod="none"
-sspassword="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
-sswspath="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
-ssbase64info="$(echo -n "${ssmethod}:${sspassword}" | base64 | tr "\n" " " | sed s/[[:space:]]//g | tr -- "+/=" "-_ " | sed -e 's/ *$//g')"
+[[ $# != 4 ]] && echo Err  !!! Useage: bash this_script.sh cloudflare_Email_Address cloudflare_Global_API_Key uuid my.domain.com && exit 1
+export CF_Email="$1" && export CF_Key="$2" && uuid="$3" && domain="$4" && [[ "${uuid%%-*}" == "${uuid##*-}" ]] && echo Bad $uuid && exit 1
+xtlsflow="xtls-rprx-direct" && ssmethod="none"
 ########
 
 # v2ray install
@@ -35,48 +26,36 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
         {
             "port": 443,"protocol": "vless",
             "settings": {
-                "clients": [{"id": "$v2my_uuid","flow": "$xtlsflow"}],"decryption": "none",
+                "clients": [{"id": "$uuid","flow": "$xtlsflow"}],"decryption": "none",
                 "fallbacks": [
                     {"dest": 8888,"xver": 0},
-                    {"path": "/$vlesswspath","dest": 1234,"xver": 1},
-                    {"path": "/$vmesstcppath","dest": 2345,"xver": 1},
-                    {"path": "/$vmesswspath","dest": 3456,"xver": 1},
-                    {"path": "/$sswspath","dest": 4567,"xver": 0}
+                    {"path": "/${uuid%%-*}","dest": 1234,"xver": 1},
+                    {"path": "/${uuid##*-}","dest": 4567,"xver": 0}
                 ]
             },
             "streamSettings": {"network": "tcp","security": "xtls","xtlsSettings": {"alpn": ["h2","http/1.1"],"certificates": [{"certificateFile": "/usr/local/etc/v2ray/v2ray.crt","keyFile": "/usr/local/etc/v2ray/v2ray.key"}]}}
         },
         {
             "port": 8888,"listen": "127.0.0.1","protocol": "trojan",
-            "settings": {"clients": [{"password":"$trojanpassword"}],"fallbacks": [{"dest": 88,"xver": 0}]},
+            "settings": {"clients": [{"password":"$uuid"}],"fallbacks": [{"dest": 88,"xver": 0}]},
             "streamSettings": {"security": "none","network": "tcp"}
         },
         {
             "port": 1234,"listen": "127.0.0.1","protocol": "vless",
-            "settings": {"clients": [{"id": "$v2my_uuid"}],"decryption": "none"},
-            "streamSettings": {"network": "ws","security": "none","wsSettings": {"acceptProxyProtocol": true,"path": "/$vlesswspath"}}
-        },
-        {
-            "port": 2345,"listen": "127.0.0.1","protocol": "vmess",
-            "settings": {"clients": [{"id": "$v2my_uuid"}]},
-            "streamSettings": {"network": "tcp","security": "none","tcpSettings": {"acceptProxyProtocol": true,"header": {"type": "http","request": {"path": ["/$vmesstcppath"]}}}}
-        },
-        {
-            "port": 3456,"listen": "127.0.0.1","protocol": "vmess",
-            "settings": {"clients": [{"id": "$v2my_uuid"}]},
-            "streamSettings": {"network": "ws","security": "none","wsSettings": {"acceptProxyProtocol": true,"path": "/$vmesswspath"}}
+            "settings": {"clients": [{"id": "$uuid"}],"decryption": "none"},
+            "streamSettings": {"network": "ws","security": "none","wsSettings": {"acceptProxyProtocol": true,"path": "/${uuid%%-*}"}}
         },
         {
             "port": "4567","listen": "127.0.0.1","tag": "onetag","protocol": "dokodemo-door",
             "settings": {"address": "v1.mux.cool","network": "tcp","followRedirect": false},
-            "streamSettings": {"security": "none","network": "ws","wsSettings": {"path": "/$sswspath"}}
+            "streamSettings": {"security": "none","network": "ws","wsSettings": {"path": "/${uuid##*-}"}}
         },
         {
             "port": 7654,"listen": "127.0.0.1","protocol": "shadowsocks",
-            "settings": {"method": "$ssmethod","password": "$sspassword","network": "tcp,udp"},
+            "settings": {"method": "$ssmethod","password": "$uuid","network": "tcp,udp"},
             "streamSettings": {"security": "none","network": "domainsocket","dsSettings": {"path": "apath","abstract": true}}
         },
-        {"port": 9876,"listen": "127.0.0.1","tag": "naiveproxyupstream","protocol": "socks","settings": {"udp": true}}
+		{"port": 9876,"listen": "127.0.0.1","tag": "naiveproxyupstream","protocol": "socks","settings": {"auth": "password","accounts": [{"user": "${uuid%%-*}","pass": "${uuid##*-}"}],"udp": true}}
     ],
     "outbounds": 
     [
@@ -108,11 +87,6 @@ rm -rf /usr/bin/caddy
 wget --no-check-certificate -O - $naivecaddyURL | gzip -d > /usr/bin/caddy && chmod +x /usr/bin/caddy
 sed -i "s/caddy\/Caddyfile$/caddy\/Caddyfile\.json/g" /lib/systemd/system/caddy.service
 
-# caddy naiveproxy secrets
-username="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
-password="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
-probe_resistance="$(tr -dc 'a-z0-9' </dev/urandom | head -c 32).com"
-
 # caddy json config
 cat <<EOF >/etc/caddy/Caddyfile.json
 {
@@ -127,10 +101,10 @@ cat <<EOF >/etc/caddy/Caddyfile.json
                             "handler": "forward_proxy",
                             "hide_ip": true,
                             "hide_via": true,
-                            "auth_user": "$username",
-                            "auth_pass": "$password",
-                            "probe_resistance": {"domain": "$probe_resistance"},
-                            "upstream": "socks5://127.0.0.1:9876"
+                            "auth_user": "${uuid%%-*}",
+                            "auth_pass": "${uuid##*-}",
+                            "probe_resistance": {"domain": "$uuid.com"},
+                            "upstream": "socks5://${uuid%%-*}:${uuid##*-}@127.0.0.1:9876"
                         }]
                     },{
                         "match": [{"host": ["$domain"]}],
@@ -168,41 +142,25 @@ $(date) v2ray client outbounds config info:
         {
             "protocol": "vless",
             "tag": "vless_tcp_$domain",
-            "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$v2my_uuid","flow": "$xtlsflow","encryption": "none"}]}]},
+            "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$uuid","flow": "$xtlsflow","encryption": "none"}]}]},
             "streamSettings": {"security": "xtls","xtlsSettings": {"serverName": "$domain"}}
         },
         
         {
             "protocol": "vless",
             "tag": "vless_ws_$domain",
-            "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$v2my_uuid","encryption": "none"}]}]},
-            "streamSettings": {"network": "ws","security": "tls","tlsSettings": {"serverName": "$domain"},"wsSettings": {"path": "/$vlesswspath","headers": {"Host": "$domain"}}}
-        },
-        
-        {
-            "protocol": "vmess",
-            "tag": "vmess_tcp_$domain",
-            "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$v2my_uuid"}]}]},
-            "streamSettings": {"security": "tls","tlsSettings": {"serverName": "$domain"},"tcpSettings": {"header":{"type": "http","request": {"path": ["/$vmesstcppath"]}}}}
-        },
-        
-        {
-            "protocol": "vmess",
-            "tag": "vmess_ws_$domain",
-            "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$v2my_uuid"}]}]},
-            "streamSettings": {"network": "ws","security": "tls","tlsSettings": {"serverName": "$domain"},"wsSettings": {"path": "/$vmesswspath","headers": {"Host": "$domain"}}}
+            "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$uuid","encryption": "none"}]}]},
+            "streamSettings": {"network": "ws","security": "tls","tlsSettings": {"serverName": "$domain"},"wsSettings": {"path": "/${uuid%%-*}","headers": {"Host": "$domain"}}}
         },
 
-$(date) $domain trojan password: $trojanpassword
-
-$(date) $domain shadowsocks info:   
-ss://${ssbase64info}@${domain}:443?plugin=v2ray-plugin%3Bpath%3D%2F${sswspath}%3Bhost%3D${domain}%3Btls#${domain}
+$(date) $domain trojan password: $uuid
 
 $(date) $domain naiveproxy info:
-username: $username
-password: $password
-probe_resistance: $probe_resistance
-proxy: https://$username:$password@$domain
+probe_resistance: $uuid.com
+proxy: https://${uuid%%-*}:${uuid##*-}@$domain
+
+$(date) $domain shadowsocks info:   
+ss://$(echo -n "${ssmethod}:${uuid}" | base64 | tr "\n" " " | sed s/[[:space:]]//g | tr -- "+/=" "-_ " | sed -e 's/ *$//g')@${domain}:443?plugin=v2ray-plugin%3Bpath%3D%2F${uuid##*-}%3Bhost%3D${domain}%3Btls#${domain}
 EOF
 
 cat $TMPFILE | tee /var/log/${TMPFILE##*/} && echo && echo $(date) Info saved: /var/log/${TMPFILE##*/}
