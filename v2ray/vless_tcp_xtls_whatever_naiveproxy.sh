@@ -3,15 +3,15 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export 
 
 # Tips: https://github.com/v2fly/v2ray-examples/tree/master/VLESS-TCP-XTLS-WHATEVER + trojan + ss+v2ray-plugin + naiveproxy  
 # integrated-examples：https://github.com/lxhao61/integrated-examples  
-# install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/vless_tcp_xtls_whatever_naiveproxy.sh) my.domain.com  
+# install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/vless_tcp_xtls_whatever_naiveproxy.sh) my.domain.com cloudflare_Global_API_Key cloudflare_Email_Address
 # uninstall : apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; /root/.acme.sh/acme.sh --uninstall; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray /root/.acme.sh  
 
 # tempfile & rm it when exit
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
 
 ########
-[[ $# != 1 ]] && echo Err !!! Useage: bash this_script.sh my.domain.com && exit 1
-domain="$1"
+[[ $# != 3 ]] && echo Err !!! Useage: bash this_script.sh mydomain.com cloudflare_Global_API_Key cloudflare_Email_Address && exit 1
+domain="$1" && export CF_Key="$2" && export CF_Email="$3"
 v2my_uuid=$(cat /proc/sys/kernel/random/uuid)
 xtlsflow="xtls-rprx-direct"
 trojanpassword="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
@@ -33,6 +33,10 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
     "log": {"loglevel": "warning"},
     "inbounds": [
         {
+            "port": "80","protocol": "dokodemo-door",
+            "settings": {"address": "$domain","port": 443,"network": "tcp,udp","followRedirect": false}
+        },
+        {
             "port": 443,"protocol": "vless",
             "settings": {
                 "clients": [{"id": "$v2my_uuid","flow": "$xtlsflow"}],"decryption": "none",
@@ -48,7 +52,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
         },
         {
             "port": 8888,"listen": "127.0.0.1","protocol": "trojan",
-            "settings": {"clients": [{"password":"$trojanpassword"}],"fallbacks": [{"dest": 80,"xver": 0}]},
+            "settings": {"clients": [{"password":"$trojanpassword"}],"fallbacks": [{"dest": 88,"xver": 0}]},
             "streamSettings": {"security": "none","network": "tcp"}
         },
         {
@@ -121,7 +125,7 @@ cat <<EOF >/etc/caddy/Caddyfile.json
         "http": {
             "servers": {
                 "srv0": {
-                    "listen": [":80"],
+                    "listen": ["127.0.0.1:88"],
                     "allow_h2c": true,
                     "routes": [{
                         "handle": [{
@@ -152,7 +156,7 @@ EOF
 apt install socat -y
 curl https://get.acme.sh | sh && source  ~/.bashrc
 /root/.acme.sh/acme.sh --upgrade --auto-upgrade
-/root/.acme.sh/acme.sh --issue -d $domain --keylength ec-256 --webroot /usr/share/caddy/
+/root/.acme.sh/acme.sh --issue --dns dns_cf --keylength ec-256 -d $domain
 /root/.acme.sh/acme.sh --installcert -d $domain --ecc --fullchain-file /usr/local/etc/v2ray/v2ray.crt --key-file /usr/local/etc/v2ray/v2ray.key --reloadcmd "service v2ray restart"
 chown -R nobody:nogroup /usr/local/etc/v2ray || chown -R nobody:nobody /usr/local/etc/v2ray
 
