@@ -4,7 +4,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export 
 # Tips: https://github.com/v2fly/v2ray-examples/tree/master/VLESS-TCP-XTLS-WHATEVER + trojan + ss+v2ray-plugin + naiveproxy  
 # integrated-examples：https://github.com/lxhao61/integrated-examples  
 # install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/vless_tcp_xtls_whatever_naiveproxy.sh) my.domain.com  
-# uninstall : apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; /root/.acme.sh/acme.sh --uninstall; systemctl stop v2ray; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray /root/.acme.sh  
+# uninstall : apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; /root/.acme.sh/acme.sh --uninstall; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray /root/.acme.sh  
 
 # tempfile & rm it when exit
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
