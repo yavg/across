@@ -206,5 +206,5 @@ proxy: https://$username:$password@$domain
 
 EOF
 
-cat $TMPFILE
+cat $TMPFILE | tee /var/log/${TMPFILE##*/} && echo && echo $(date) Info saved: /var/log/${TMPFILE##*/}
 # done
