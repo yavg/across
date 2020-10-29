@@ -10,7 +10,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export 
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
 
 ########
-[[ $# != 3 ]] && echo Err !!! Useage: bash this_script.sh mydomain.com cloudflare_Global_API_Key cloudflare_Email_Address && exit 1
+[[ $# != 3 ]] && echo Err !!! Useage: bash this_script.sh my.domain.com cloudflare_Global_API_Key cloudflare_Email_Address && exit 1
 domain="$1" && export CF_Key="$2" && export CF_Email="$3"
 v2my_uuid=$(cat /proc/sys/kernel/random/uuid)
 xtlsflow="xtls-rprx-direct"
@@ -122,7 +122,6 @@ cat <<EOF >/etc/caddy/Caddyfile.json
             "servers": {
                 "srv0": {
                     "listen": ["127.0.0.1:88"],
-                    "allow_h2c": true,
                     "routes": [{
                         "handle": [{
                             "handler": "forward_proxy",
@@ -140,7 +139,11 @@ cat <<EOF >/etc/caddy/Caddyfile.json
                             "root": "/usr/share/caddy"
                         }],
                         "terminal": true
-                    }]
+                    }],
+                    "automatic_https": {
+                        "disable": true 
+                    },
+                    "allow_h2c": true,
                 }
             }
         }
