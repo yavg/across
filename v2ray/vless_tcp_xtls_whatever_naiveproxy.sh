@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export PATH
 
-# Tips: 个人使用 仅供参考 当前配置 https://github.com/v2fly/v2ray-examples/tree/master/VLESS-TCP-XTLS-WHATEVER + trojan + ss+v2ray-plugin + naiveproxy
-## 部分配置参考：https://github.com/lxhao61/integrated-examples
-# install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/vless_tcp_xtls_whatever_naiveproxy.sh) my.domain.com
-# uninstall: apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray; /root/.acme.sh/acme.sh --uninstall
+# Tips: https://github.com/v2fly/v2ray-examples/tree/master/VLESS-TCP-XTLS-WHATEVER + trojan + ss+v2ray-plugin + naiveproxy  
+# integrated-examples：https://github.com/lxhao61/integrated-examples  
+# install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/vless_tcp_xtls_whatever_naiveproxy.sh) my.domain.com  
+# uninstall : apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; /root/.acme.sh/acme.sh --uninstall; systemctl stop v2ray; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray /root/.acme.sh  
 
 # tempfile & rm it when exit
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
@@ -48,7 +48,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
         },
         {
             "port": 8888,"listen": "127.0.0.1","protocol": "trojan",
-            "settings": {"clients": [{"password":"$trojanpassword"}],"fallbacks": [{"dest": 80,"xver": 0}]},
+            "settings": {"clients": [{"password":"$trojanpassword"}],"fallbacks": [{"dest": 88,"xver": 0}]},
             "streamSettings": {"security": "none","network": "tcp"}
         },
         {
@@ -100,7 +100,7 @@ EOF
 
 # caddy install 
 caddyURL="$(wget -qO-  https://api.github.com/repos/caddyserver/caddy/releases | grep -E "browser_download_url.*linux_amd64\.deb" | cut -f4 -d\" | head -n1)"
-wget -O $TMPFILE $caddyURL && dpkg -i $TMPFILE
+wget -O $TMPFILE $caddyURL && dpkg -i $TMPFILE && systemctl stop caddy
 
 # caddy with naive fork of forwardproxy: https://github.com/klzgrad/forwardproxy
 naivecaddyURL="https://github.com/mixool/across/raw/master/source/caddy.gz"
@@ -121,7 +121,7 @@ cat <<EOF >/etc/caddy/Caddyfile.json
         "http": {
             "servers": {
                 "srv0": {
-                    "listen": [":80"],
+                    "listen": ["127.0.0.1:88"],
                     "allow_h2c": true,
                     "routes": [{
                         "handle": [{
@@ -147,12 +147,11 @@ cat <<EOF >/etc/caddy/Caddyfile.json
 }
 EOF
 
-# caddy as webserver, install acme.sh installcert
-systemctl start caddy
+# acme.sh installcert
 apt install socat -y
 curl https://get.acme.sh | sh && source  ~/.bashrc
 /root/.acme.sh/acme.sh --upgrade --auto-upgrade
-/root/.acme.sh/acme.sh --issue -d $domain --keylength ec-256 --webroot /usr/share/caddy/
+/root/.acme.sh/acme.sh --issue --standalone -d $domain --keylength ec-256 --webroot /usr/share/caddy/
 /root/.acme.sh/acme.sh --installcert -d $domain --ecc --fullchain-file /usr/local/etc/v2ray/v2ray.crt --key-file /usr/local/etc/v2ray/v2ray.key --reloadcmd "service v2ray restart"
 chown -R nobody:nogroup /usr/local/etc/v2ray || chown -R nobody:nobody /usr/local/etc/v2ray
 
