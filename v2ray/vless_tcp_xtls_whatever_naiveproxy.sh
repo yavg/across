@@ -33,10 +33,6 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
     "log": {"loglevel": "warning"},
     "inbounds": [
         {
-            "port": "80","protocol": "dokodemo-door",
-            "settings": {"address": "$domain","port": 443,"network": "tcp,udp","followRedirect": false}
-        },
-        {
             "port": 443,"protocol": "vless",
             "settings": {
                 "clients": [{"id": "$v2my_uuid","flow": "$xtlsflow"}],"decryption": "none",
