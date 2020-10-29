@@ -157,11 +157,7 @@ curl https://get.acme.sh | sh && source  ~/.bashrc
 chown -R nobody:nogroup /usr/local/etc/v2ray || chown -R nobody:nobody /usr/local/etc/v2ray
 
 # systemctl service info
-systemctl daemon-reload
-echo; echo $(date) caddy status:
-systemctl enable caddy && systemctl restart caddy && sleep 1 && systemctl status caddy | more | grep -A 2 "caddy.service"
-echo; echo $(date) v2ray status:
-systemctl enable v2ray && systemctl restart v2ray && sleep 1 && systemctl status v2ray | more | grep -A 2 "v2ray.service"
+systemctl daemon-reload && systemctl enable caddy v2ray && systemctl restart caddy v2ray && sleep 3 && systemctl status caddy v2ray | grep -A 2 "service" && echo
 
 # info
 cat <<EOF >$TMPFILE
