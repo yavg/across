@@ -6,6 +6,11 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export 
 # install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/v2ray_whatever_uuid.sh) cloudflare_Email_Address cloudflare_Global_API_Key uuid my.domain.com
 # uninstall : apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; /root/.acme.sh/acme.sh --uninstall; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray /root/.acme.sh  
 
+####
+#截取传入参数uuid作为各配置所需参数部署服务端，只需uuid和vps对应域名即可得到所有客户端参数，uuid务必妥善保存
+#1. uuid第一部分对应vless+ws的路径参数 2. uuid即为trojan的密码 3. uuid最后部分对应ss+ws的路径参数 4. uuid第一和最后部分分别对应naiveproxy的账号密码 5. 其它参看输出信息
+####
+
 # tempfile & rm it when exit
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
 
@@ -55,7 +60,9 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "settings": {"method": "$ssmethod","password": "$uuid","network": "tcp,udp"},
             "streamSettings": {"security": "none","network": "domainsocket","dsSettings": {"path": "apath","abstract": true}}
         },
-		{"port": 9876,"listen": "127.0.0.1","tag": "naiveproxyupstream","protocol": "socks","settings": {"auth": "password","accounts": [{"user": "${uuid%%-*}","pass": "${uuid##*-}"}],"udp": true}}
+        {   "port": 9876,"listen": "127.0.0.1","tag": "naiveproxyupstream","protocol": "socks",
+            "settings": {"auth": "password","accounts": [{"user": "${uuid%%-*}","pass": "${uuid##*-}"}],"udp": true}
+        }
     ],
     "outbounds": 
     [
@@ -71,7 +78,6 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             {"type": "field","inboundTag": ["onetag"],"outboundTag": "twotag"},
             {"type": "field","outboundTag": "blocked","ip": ["geoip:private"]},
             {"type": "field","outboundTag": "blocked","domain": ["geosite:private","geosite:category-ads-all"]}
-            
         ]
     }
 }
