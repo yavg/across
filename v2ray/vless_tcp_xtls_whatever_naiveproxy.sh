@@ -38,7 +38,6 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
                 "clients": [{"id": "$v2my_uuid","flow": "$xtlsflow"}],"decryption": "none",
                 "fallbacks": [
                     {"dest": 8888,"xver": 0},
-                    {"alpn": "h2","dest": 88,"xver": 0},
                     {"path": "/$vlesswspath","dest": 1234,"xver": 1},
                     {"path": "/$vmesstcppath","dest": 2345,"xver": 1},
                     {"path": "/$vmesswspath","dest": 3456,"xver": 1},
