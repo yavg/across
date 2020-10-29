@@ -3,15 +3,15 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export 
 
 # Tips: https://github.com/v2fly/v2ray-examples/tree/master/VLESS-TCP-XTLS-WHATEVER + trojan + ss+v2ray-plugin + naiveproxy  
 # integrated-examples：https://github.com/lxhao61/integrated-examples  
-# install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/vless_tcp_xtls_whatever_naiveproxy.sh) my.domain.com cloudflare_Global_API_Key cloudflare_Email_Address
+# install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/vless_tcp_xtls_whatever_naiveproxy.sh) cloudflare_Email_Address cloudflare_Global_API_Key my.domain.com
 # uninstall : apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; /root/.acme.sh/acme.sh --uninstall; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray /root/.acme.sh  
 
 # tempfile & rm it when exit
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
 
 ########
-[[ $# != 3 ]] && echo Err !!! Useage: bash this_script.sh my.domain.com cloudflare_Global_API_Key cloudflare_Email_Address && exit 1
-domain="$1" && export CF_Key="$2" && export CF_Email="$3"
+[[ $# != 3 ]] && echo Err !!! Useage: bash this_script.sh cloudflare_Email_Address cloudflare_Global_API_Key my.domain.com && exit 1
+export CF_Email="$1" && export CF_Key="$2" && domain="$1"
 v2my_uuid=$(cat /proc/sys/kernel/random/uuid)
 xtlsflow="xtls-rprx-direct"
 trojanpassword="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
