@@ -48,7 +48,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
         },
         {
             "port": 8888,"listen": "127.0.0.1","protocol": "trojan",
-            "settings": {"clients": [{"password":"$trojanpassword"}],"fallbacks": [{"dest": 88,"xver": 0}]},
+            "settings": {"clients": [{"password":"$trojanpassword"}],"fallbacks": [{"dest": 80,"xver": 0}]},
             "streamSettings": {"security": "none","network": "tcp"}
         },
         {
@@ -100,7 +100,7 @@ EOF
 
 # caddy install 
 caddyURL="$(wget -qO-  https://api.github.com/repos/caddyserver/caddy/releases | grep -E "browser_download_url.*linux_amd64\.deb" | cut -f4 -d\" | head -n1)"
-wget -O $TMPFILE $caddyURL && dpkg -i $TMPFILE && systemctl stop caddy
+wget -O $TMPFILE $caddyURL && dpkg -i $TMPFILE
 
 # caddy with naive fork of forwardproxy: https://github.com/klzgrad/forwardproxy
 naivecaddyURL="https://github.com/mixool/across/raw/master/source/caddy.gz"
@@ -121,7 +121,7 @@ cat <<EOF >/etc/caddy/Caddyfile.json
         "http": {
             "servers": {
                 "srv0": {
-                    "listen": ["127.0.0.1:88"],
+                    "listen": [":80"],
                     "allow_h2c": true,
                     "routes": [{
                         "handle": [{
@@ -151,7 +151,7 @@ EOF
 apt install socat -y
 curl https://get.acme.sh | sh && source  ~/.bashrc
 /root/.acme.sh/acme.sh --upgrade --auto-upgrade
-/root/.acme.sh/acme.sh --issue --standalone -d $domain --keylength ec-256 --webroot /usr/share/caddy/
+/root/.acme.sh/acme.sh --issue -d $domain --keylength ec-256 --webroot /usr/share/caddy/
 /root/.acme.sh/acme.sh --installcert -d $domain --ecc --fullchain-file /usr/local/etc/v2ray/v2ray.crt --key-file /usr/local/etc/v2ray/v2ray.key --reloadcmd "service v2ray restart"
 chown -R nobody:nogroup /usr/local/etc/v2ray || chown -R nobody:nobody /usr/local/etc/v2ray
 
