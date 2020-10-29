@@ -11,7 +11,7 @@ trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
 
 ########
 [[ $# != 3 ]] && echo Err !!! Useage: bash this_script.sh cloudflare_Email_Address cloudflare_Global_API_Key my.domain.com && exit 1
-export CF_Email="$1" && export CF_Key="$2" && domain="$1"
+export CF_Email="$1" && export CF_Key="$2" && domain="$3"
 v2my_uuid=$(cat /proc/sys/kernel/random/uuid)
 xtlsflow="xtls-rprx-direct"
 trojanpassword="$(tr -dc 'a-z0-9A-Z' </dev/urandom | head -c 16)"
