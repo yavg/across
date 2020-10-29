@@ -143,7 +143,7 @@ cat <<EOF >/etc/caddy/Caddyfile.json
                     "automatic_https": {
                         "disable": true 
                     },
-                    "allow_h2c": true,
+                    "allow_h2c": true
                 }
             }
         }
