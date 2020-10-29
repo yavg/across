@@ -102,15 +102,6 @@ EOF
 caddyURL="$(wget -qO-  https://api.github.com/repos/caddyserver/caddy/releases | grep -E "browser_download_url.*linux_amd64\.deb" | cut -f4 -d\" | head -n1)"
 wget -O $TMPFILE $caddyURL && dpkg -i $TMPFILE
 
-# caddy as webserver, install acme.sh installcert
-systemctl start caddy
-apt install socat -y
-curl https://get.acme.sh | sh && source  ~/.bashrc
-/root/.acme.sh/acme.sh --upgrade --auto-upgrade
-/root/.acme.sh/acme.sh --issue -d $domain --keylength ec-256 --webroot /usr/share/caddy/
-/root/.acme.sh/acme.sh --installcert -d $domain --ecc --fullchain-file /usr/local/etc/v2ray/v2ray.crt --key-file /usr/local/etc/v2ray/v2ray.key --reloadcmd "service v2ray restart"
-chown -R nobody:nogroup /usr/local/etc/v2ray || chown -R nobody:nobody /usr/local/etc/v2ray
-
 # caddy with naive fork of forwardproxy: https://github.com/klzgrad/forwardproxy
 naivecaddyURL="https://github.com/mixool/across/raw/master/source/caddy.gz"
 rm -rf /usr/bin/caddy
@@ -155,6 +146,15 @@ cat <<EOF >/etc/caddy/Caddyfile.json
     }
 }
 EOF
+
+# caddy as webserver, install acme.sh installcert
+systemctl start caddy
+apt install socat -y
+curl https://get.acme.sh | sh && source  ~/.bashrc
+/root/.acme.sh/acme.sh --upgrade --auto-upgrade
+/root/.acme.sh/acme.sh --issue -d $domain --keylength ec-256 --webroot /usr/share/caddy/
+/root/.acme.sh/acme.sh --installcert -d $domain --ecc --fullchain-file /usr/local/etc/v2ray/v2ray.crt --key-file /usr/local/etc/v2ray/v2ray.key --reloadcmd "service v2ray restart"
+chown -R nobody:nogroup /usr/local/etc/v2ray || chown -R nobody:nobody /usr/local/etc/v2ray
 
 # systemctl service info
 systemctl daemon-reload
