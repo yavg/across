@@ -160,7 +160,7 @@ curl https://get.acme.sh | sh && source  ~/.bashrc
 chown -R nobody:nogroup /usr/local/etc/v2ray || chown -R nobody:nobody /usr/local/etc/v2ray
 
 # systemctl service info
-systemctl daemon-reload && systemctl enable caddy v2ray && systemctl restart caddy v2ray && sleep 3 && systemctl status caddy v2ray | grep -A 2 "service" && echo
+systemctl daemon-reload && systemctl enable caddy v2ray && systemctl restart caddy v2ray && sleep 3 && systemctl status caddy v2ray | grep -A 2 "service"
 
 # info
 cat <<EOF >$TMPFILE
@@ -203,7 +203,6 @@ username: $username
 password: $password
 probe_resistance: $probe_resistance
 proxy: https://$username:$password@$domain
-
 EOF
 
 cat $TMPFILE | tee /var/log/${TMPFILE##*/} && echo && echo $(date) Info saved: /var/log/${TMPFILE##*/}
