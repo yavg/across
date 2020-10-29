@@ -48,7 +48,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
         },
         {
             "port": 8888,"listen": "127.0.0.1","protocol": "trojan",
-            "settings": {"clients": [{"password":"$trojanpassword"}],"fallbacks": [{"dest": 88,"xver": 0}]},
+            "settings": {"clients": [{"password":"$trojanpassword"}],"fallbacks": [{"dest": 80,"xver": 0}]},
             "streamSettings": {"security": "none","network": "tcp"}
         },
         {
@@ -130,7 +130,7 @@ cat <<EOF >/etc/caddy/Caddyfile.json
         "http": {
             "servers": {
                 "srv0": {
-                    "listen": ["127.0.0.1:88"],
+                    "listen": [":80"],
                     "allow_h2c": true,
                     "routes": [{
                         "handle": [{
