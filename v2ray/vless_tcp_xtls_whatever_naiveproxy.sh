@@ -134,8 +134,8 @@ cat <<EOF >/etc/caddy/Caddyfile.json
                             "upstream": "socks5://127.0.0.1:9876"
                         }]
                     },{
+						"match": [{"host": ["$domain"]}],
                         "handle": [{
-                            "match": [{"host": ["$domain"]}],
                             "handler": "file_server",
                             "root": "/usr/share/caddy"
                         }],
