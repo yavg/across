@@ -1,5 +1,5 @@
 #!/bin/sh
-## 用于https://github.com/mixool/dockershc项目安装运行v2ray使用协议trojan-go的脚本
+## 用于https://github.com/mixool/dockershc项目安装运行v2ray使用trojan协议的脚本
 
 if [[ ! -f "/workerone" ]]; then
     # install and rename
