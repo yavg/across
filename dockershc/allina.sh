@@ -9,10 +9,10 @@ if [[ ! -f "/workerone" ]]; then
 {
     "inbounds": 
     [
-		{
-			"port": 3000,"protocol": "dokodemo-door",
-			"settings": {"address": "0.0.0.0","network": "tcp","followRedirect": false}
-		},
+        {
+            "port": 3000,"protocol": "dokodemo-door",
+            "settings": {"address": "0.0.0.0","network": "tcp","followRedirect": false}
+        },
         {
             "port": 1234,"listen": "127.0.0.1","protocol": "trojan",
             "settings": {"clients": [{"password":"password"}]},
@@ -22,14 +22,14 @@ if [[ ! -f "/workerone" ]]; then
     "outbounds": 
     [
         {"protocol": "freedom","tag": "direct","settings": {}},
-		{"protocol": "freedom","tag": "doortrojan","settings": {"redirect": "127.0.0.1:1234"}},
+        {"protocol": "freedom","tag": "doortrojan","settings": {"redirect": "127.0.0.1:1234"}},
         {"protocol": "blackhole","tag": "blocked","settings": {}}
     ],
     "routing": 
     {
         "rules": 
         [
-			{"type": "field","domain": ["asia1.kinto.io"],"outboundTag": "doortrojan"},
+            {"type": "field","domain": ["asia1.kinto.io"],"outboundTag": "doortrojan"},
             {"type": "field","outboundTag": "blocked","ip": ["geoip:private"]},
             {"type": "field","outboundTag": "block","protocol": ["bittorrent"]},
             {"type": "field","outboundTag": "blocked","domain": ["geosite:category-ads-all"]}
