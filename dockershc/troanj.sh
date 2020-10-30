@@ -12,7 +12,7 @@ if [[ ! -f "/workerone" ]]; then
         {
             "port": 3000,"listen": "0.0.0.0","protocol": "trojan",
             "settings": {"clients": [{"password":"password"}]},
-            "streamSettings": {"network": "ws","wsSettings": {"path": "/tojanpath"}}
+            "streamSettings": {"network": "ws","wsSettings": {"path": "/trojanpass"}}
         }
     ],
     "outbounds": 
