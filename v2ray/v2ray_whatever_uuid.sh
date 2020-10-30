@@ -1,23 +1,21 @@
 #!/usr/bin/env bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export PATH
 
-# Tips: vless + trojan + ss+v2ray-plugin + naiveproxy | uuid=$(cat /proc/sys/kernel/random/uuid)
-# integrated-examples：https://github.com/lxhao61/integrated-examples  
-# install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/v2ray_whatever_uuid.sh) cloudflare_Email_Address cloudflare_Global_API_Key uuid my.domain.com
-# uninstall : apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; /root/.acme.sh/acme.sh --uninstall; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray /root/.acme.sh  
-
-####
-#截取传入参数uuid作为各配置所需参数部署服务端，只需uuid和vps对应域名即可得到所有客户端参数，自用uuid务必妥善保存，如有分享需求，建议生成一个分享专用的uuid
-#1. uuid第一部分对应vless+ws的路径参数 2. uuid即为trojan的密码 3. uuid最后部分对应ss+ws的路径参数 4. uuid第一和最后部分分别对应naiveproxy的账号密码 5. 其它参看输出信息
-####
+# Tips: vless + trojan + ss+v2ray-plugin + naiveproxy | 传入参数$uuid作为服务端账号和密码参数，uuid-[vless|trojan|ss]作为服务端路径参数，自用uuid务必妥善保存，如有分享需求，建议生成一个分享专用的uuid，其它查看输出信息  
+# integrated-examples：https://github.com/lxhao61/integrated-examples | uuid=$(cat /proc/sys/kernel/random/uuid) 
+# install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/v2ray_whatever_uuid.sh) cloudflare_Email_Address cloudflare_Global_API_Key uuid my.domain.com  
+# uninstall : apt purge caddy -y; bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; /root/.acme.sh/acme.sh --uninstall; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray /root/.acme.sh   
 
 # tempfile & rm it when exit
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
 
 ########
 [[ $# != 4 ]] && echo Err  !!! Useage: bash this_script.sh cloudflare_Email_Address cloudflare_Global_API_Key uuid my.domain.com && exit 1
-export CF_Email="$1" && export CF_Key="$2" && uuid="$3" && domain="$4" && [[ "${uuid%%-*}" == "${uuid##*-}" ]] && echo Bad $uuid && exit 1
+export CF_Email="$1" && export CF_Key="$2" && uuid="$3" && domain="$4"
 xtlsflow="xtls-rprx-direct" && ssmethod="none"
+vlesspath="${uuid}-vless"
+trojanpath="${uuid}-trojan"
+shadowsockspath="${uuid}-ss"
 ########
 
 # v2ray install
@@ -33,35 +31,41 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "settings": {
                 "clients": [{"id": "$uuid","flow": "$xtlsflow"}],"decryption": "none",
                 "fallbacks": [
-                    {"dest": 8888,"xver": 0},
-                    {"path": "/${uuid%%-*}","dest": 1234,"xver": 1},
-                    {"path": "/${uuid##*-}","dest": 4567,"xver": 0}
+                    {"dest": 50001},
+                    {"path": "/$trojanpath","dest": 50002},
+                    {"path": "/$vlesspath","dest": 50003},
+                    {"path": "/$shadowsockspath","dest": 50004}
                 ]
             },
             "streamSettings": {"network": "tcp","security": "xtls","xtlsSettings": {"alpn": ["h2","http/1.1"],"certificates": [{"certificateFile": "/usr/local/etc/v2ray/v2ray.crt","keyFile": "/usr/local/etc/v2ray/v2ray.key"}]}}
         },
         {
-            "port": 8888,"listen": "127.0.0.1","protocol": "trojan",
-            "settings": {"clients": [{"password":"$uuid"}],"fallbacks": [{"dest": 88,"xver": 0}]},
+            "port": 50001,"listen": "127.0.0.1","protocol": "trojan",
+            "settings": {"clients": [{"password":"$uuid"}],"fallbacks": [{"dest": 50080,"xver": 0}]},
             "streamSettings": {"security": "none","network": "tcp"}
         },
         {
-            "port": 1234,"listen": "127.0.0.1","protocol": "vless",
+            "port": 50002,"listen": "127.0.0.1","protocol": "trojan",
+            "settings": {"clients": [{"password":"$uuid"}]},
+            "streamSettings": {"network": "ws","wsSettings": {"path": "/$trojanpath"}}
+        },
+        {
+            "port": 50003,"listen": "127.0.0.1","protocol": "vless",
             "settings": {"clients": [{"id": "$uuid"}],"decryption": "none"},
-            "streamSettings": {"network": "ws","security": "none","wsSettings": {"acceptProxyProtocol": true,"path": "/${uuid%%-*}"}}
+            "streamSettings": {"network": "ws","security": "none","wsSettings": {"path": "/$vlesspath"}}
         },
         {
-            "port": "4567","listen": "127.0.0.1","tag": "onetag","protocol": "dokodemo-door",
+            "port": "50004","listen": "127.0.0.1","tag": "onetag","protocol": "dokodemo-door",
             "settings": {"address": "v1.mux.cool","network": "tcp","followRedirect": false},
-            "streamSettings": {"security": "none","network": "ws","wsSettings": {"path": "/${uuid##*-}"}}
+            "streamSettings": {"security": "none","network": "ws","wsSettings": {"path": "/$shadowsockspath"}}
         },
         {
-            "port": 7654,"listen": "127.0.0.1","protocol": "shadowsocks",
+            "port": 50005,"listen": "127.0.0.1","protocol": "shadowsocks",
             "settings": {"method": "$ssmethod","password": "$uuid","network": "tcp,udp"},
             "streamSettings": {"security": "none","network": "domainsocket","dsSettings": {"path": "apath","abstract": true}}
         },
-        {   "port": 9876,"listen": "127.0.0.1","tag": "naiveproxyupstream","protocol": "socks",
-            "settings": {"auth": "password","accounts": [{"user": "${uuid%%-*}","pass": "${uuid##*-}"}],"udp": true}
+        {   "port": 59876,"listen": "127.0.0.1","tag": "naiveproxyupstream","protocol": "socks",
+            "settings": {"auth": "password","accounts": [{"user": "$uuid","pass": "$uuid"}],"udp": true}
         }
     ],
     "outbounds": 
@@ -101,16 +105,16 @@ cat <<EOF >/etc/caddy/Caddyfile.json
         "http": {
             "servers": {
                 "srv0": {
-                    "listen": ["127.0.0.1:88"],
+                    "listen": ["127.0.0.1:50080"],
                     "routes": [{
                         "handle": [{
                             "handler": "forward_proxy",
                             "hide_ip": true,
                             "hide_via": true,
-                            "auth_user": "${uuid%%-*}",
-                            "auth_pass": "${uuid##*-}",
+                            "auth_user": "$uuid",
+                            "auth_pass": "$uuid",
                             "probe_resistance": {"domain": "$uuid.com"},
-                            "upstream": "socks5://${uuid%%-*}:${uuid##*-}@127.0.0.1:9876"
+                            "upstream": "socks5://$uuid:$uuid@127.0.0.1:59876"
                         }]
                     },{
                         "match": [{"host": ["$domain"]}],
@@ -144,29 +148,20 @@ systemctl daemon-reload && systemctl enable caddy v2ray && systemctl restart cad
 
 # info
 cat <<EOF >$TMPFILE
-$(date) v2ray client outbounds config info:
-        {
-            "protocol": "vless",
-            "tag": "vless_tcp_$domain",
-            "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$uuid","flow": "$xtlsflow","encryption": "none"}]}]},
-            "streamSettings": {"security": "xtls","xtlsSettings": {"serverName": "$domain"}}
-        },
-        
-        {
-            "protocol": "vless",
-            "tag": "vless_ws_$domain",
-            "settings": {"vnext": [{"address": "$domain","port": 443,"users": [{"id": "$uuid","encryption": "none"}]}]},
-            "streamSettings": {"network": "ws","security": "tls","tlsSettings": {"serverName": "$domain"},"wsSettings": {"path": "/${uuid%%-*}","headers": {"Host": "$domain"}}}
-        },
+$(date) $domain vless:
+uuid: $uuid
+path: $vlesspath
 
-$(date) $domain trojan password: $uuid
+$(date) $domain trojan:
+password: $uuid
+path: $trojanpath
 
-$(date) $domain naiveproxy info:
+$(date) $domain shadowsocks:   
+ss://$(echo -n "${ssmethod}:${uuid}" | base64 | tr "\n" " " | sed s/[[:space:]]//g | tr -- "+/=" "-_ " | sed -e 's/ *$//g')@${domain}:443?plugin=v2ray-plugin%3Bpath%3D%2F${shadowsockspath}%3Bhost%3D${domain}%3Btls#${domain}
+
+$(date) $domain naiveproxy:
 probe_resistance: $uuid.com
-proxy: https://${uuid%%-*}:${uuid##*-}@$domain
-
-$(date) $domain shadowsocks info:   
-ss://$(echo -n "${ssmethod}:${uuid}" | base64 | tr "\n" " " | sed s/[[:space:]]//g | tr -- "+/=" "-_ " | sed -e 's/ *$//g')@${domain}:443?plugin=v2ray-plugin%3Bpath%3D%2F${uuid##*-}%3Bhost%3D${domain}%3Btls#${domain}
+proxy: https://$uuid:$uuid@$domain
 EOF
 
 cat $TMPFILE | tee /var/log/${TMPFILE##*/} && echo && echo $(date) Info saved: /var/log/${TMPFILE##*/}
