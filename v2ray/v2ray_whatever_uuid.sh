@@ -162,6 +162,8 @@ ss://$(echo -n "${ssmethod}:${uuid}" | base64 | tr "\n" " " | sed s/[[:space:]]/
 $(date) $domain naiveproxy:
 probe_resistance: $uuid.com
 proxy: https://$uuid:$uuid@$domain
+
+$(date) Visit: https://$domain
 EOF
 
 cat $TMPFILE | tee /var/log/${TMPFILE##*/} && echo && echo $(date) Info saved: /var/log/${TMPFILE##*/}
