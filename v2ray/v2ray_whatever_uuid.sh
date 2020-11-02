@@ -31,7 +31,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "settings": {
                 "clients": [{"id": "$uuid","flow": "$xtlsflow"}],"decryption": "none",
                 "fallbacks": [
-                    {"dest": "/usr/local/etc/v2ray/trojantcp"},
+                    {"dest": "/usr/local/etc/v2ray/trojan"},
                     {"dest": "/usr/local/etc/v2ray/trojanws","path": "/$trojanpath"},
                     {"dest": "/usr/local/etc/v2ray/vlessws","path": "/$vlesspath"},
                     {"dest": 50001,"path": "/$shadowsockspath"}
@@ -40,7 +40,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "streamSettings": {"network": "tcp","security": "xtls","xtlsSettings": {"alpn": ["h2","http/1.1"],"certificates": [{"certificateFile": "/usr/local/etc/v2ray/v2ray.crt","keyFile": "/usr/local/etc/v2ray/v2ray.key"}]}}
         },
         {
-            "listen": "/usr/local/etc/v2ray/trojantcp","protocol": "trojan",
+            "listen": "/usr/local/etc/v2ray/trojan","protocol": "trojan",
             "settings": {"clients": [{"password":"$uuid"}],"fallbacks": [{"dest": 50080}]},
             "streamSettings": {"security": "none","network": "tcp"}
         },
