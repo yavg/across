@@ -31,38 +31,38 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "settings": {
                 "clients": [{"id": "$uuid","flow": "$xtlsflow"}],"decryption": "none",
                 "fallbacks": [
-                    {"dest": 50001},
-                    {"path": "/$trojanpath","dest": 50002},
-                    {"path": "/$vlesspath","dest": 50003},
-                    {"path": "/$shadowsockspath","dest": 50004}
+                    {"dest": "/usr/local/etc/v2ray/trojantcp"},
+                    {"dest": "/usr/local/etc/v2ray/trojanws","path": "/$trojanpath"},
+                    {"dest": "/usr/local/etc/v2ray/vlessws","path": "/$vlesspath"},
+                    {"dest": 50001,"path": "/$shadowsockspath"}
                 ]
             },
             "streamSettings": {"network": "tcp","security": "xtls","xtlsSettings": {"alpn": ["h2","http/1.1"],"certificates": [{"certificateFile": "/usr/local/etc/v2ray/v2ray.crt","keyFile": "/usr/local/etc/v2ray/v2ray.key"}]}}
         },
         {
-            "port": 50001,"listen": "127.0.0.1","protocol": "trojan",
-            "settings": {"clients": [{"password":"$uuid"}],"fallbacks": [{"dest": 50080,"xver": 0}]},
+            "listen": "/usr/local/etc/v2ray/trojantcp","protocol": "trojan",
+            "settings": {"clients": [{"password":"$uuid"}],"fallbacks": [{"dest": 50080}]},
             "streamSettings": {"security": "none","network": "tcp"}
         },
         {
-            "port": 50002,"listen": "127.0.0.1","protocol": "trojan",
+            "listen": "/usr/local/etc/v2ray/trojanws","protocol": "trojan",
             "settings": {"clients": [{"password":"$uuid"}]},
             "streamSettings": {"network": "ws","wsSettings": {"path": "/$trojanpath"}}
         },
         {
-            "port": 50003,"listen": "127.0.0.1","protocol": "vless",
+            "listen": "/usr/local/etc/v2ray/vlessws","protocol": "vless",
             "settings": {"clients": [{"id": "$uuid"}],"decryption": "none"},
             "streamSettings": {"network": "ws","security": "none","wsSettings": {"path": "/$vlesspath"}}
         },
         {
-            "port": "50004","listen": "127.0.0.1","tag": "onetag","protocol": "dokodemo-door",
+            "port": "50001","listen": "127.0.0.1","tag": "onetag","protocol": "dokodemo-door",
             "settings": {"address": "v1.mux.cool","network": "tcp","followRedirect": false},
             "streamSettings": {"security": "none","network": "ws","wsSettings": {"path": "/$shadowsockspath"}}
         },
         {
-            "port": 50005,"listen": "127.0.0.1","protocol": "shadowsocks",
+            "port": 50002,"listen": "127.0.0.1","protocol": "shadowsocks",
             "settings": {"method": "$ssmethod","password": "$uuid","network": "tcp,udp"},
-            "streamSettings": {"security": "none","network": "domainsocket","dsSettings": {"path": "apath","abstract": true}}
+            "streamSettings": {"security": "none","network": "domainsocket","dsSettings": {"path": "/usr/local/etc/v2ray/ss"}}
         },
         {   "port": 59876,"listen": "127.0.0.1","tag": "naiveproxyupstream","protocol": "socks",
             "settings": {"auth": "password","accounts": [{"user": "$uuid","pass": "$uuid"}],"udp": true}
@@ -72,7 +72,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
     [
         {"protocol": "freedom","tag": "direct","settings": {}},
         {"protocol": "blackhole","tag": "blocked","settings": {}},
-        {"protocol": "freedom","tag": "twotag","streamSettings": {"network": "domainsocket","dsSettings": {"path": "apath","abstract": true}}}
+        {"protocol": "freedom","tag": "twotag","streamSettings": {"network": "domainsocket","dsSettings": {"path": "/usr/local/etc/v2ray/ss"}}}
     ],
 
     "routing": 
