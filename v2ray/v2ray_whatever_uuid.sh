@@ -110,7 +110,7 @@ wget -O $TMPFILE $caddyURL && dpkg -i $TMPFILE
 naivecaddyURL="https://github.com/mixool/across/raw/master/source/caddy.gz"
 rm -rf /usr/bin/caddy
 wget --no-check-certificate -O - $naivecaddyURL | gzip -d > /usr/bin/caddy && chmod +x /usr/bin/caddy
-sed -i "s/caddy\/Caddyfile$/caddy\/Caddyfile\.json/g" /lib/systemd/system/caddy.service
+sed -i "s/caddy\/Caddyfile$/caddy\/Caddyfile\.json/g" /lib/systemd/system/caddy.service && systemctl daemon-reload
 
 # caddy json config
 cat <<EOF >/etc/caddy/Caddyfile.json
@@ -186,7 +186,7 @@ curl https://get.acme.sh | sh && source  ~/.bashrc
 chown -R nobody:nogroup /usr/local/etc/v2ray || chown -R nobody:nobody /usr/local/etc/v2ray
 
 # systemctl service info
-systemctl daemon-reload && systemctl enable caddy v2ray && systemctl restart caddy v2ray && sleep 3 && systemctl status caddy v2ray | grep -A 2 "service"
+systemctl enable caddy v2ray && systemctl restart caddy v2ray && sleep 3 && systemctl status caddy v2ray | grep -A 2 "service"
 
 # info
 cat <<EOF >$TMPFILE
