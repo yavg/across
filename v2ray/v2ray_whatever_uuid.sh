@@ -47,8 +47,8 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
                     {"dest": "/usr/local/etc/v2ray/trojan"},
                     {"dest": "/usr/local/etc/v2ray/trojanws","path": "/$trojanpath"},
                     {"dest": "/usr/local/etc/v2ray/vlessws","path": "/$vlesspath"},
-					{"dest": "/usr/local/etc/v2ray/vmessws","path": "/$vmesswspath"},
-					{"dest": "/usr/local/etc/v2ray/vmesstcp","path": "/$vmesstcppath"},
+                    {"dest": "/usr/local/etc/v2ray/vmessws","path": "/$vmesswspath"},
+                    {"dest": "/usr/local/etc/v2ray/vmesstcp","path": "/$vmesstcppath"},
                     {"dest": 50003,"path": "/$shadowsockspath"}
                 ]
             },
@@ -74,12 +74,12 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "settings": {"clients": [{"id": "$uuid"}],"decryption": "none"},
             "streamSettings": {"network": "h2","httpSettings": {"host": ["$domain"],"path": "/$vlessh2path"}}
         },
-		{
+        {
             "listen": "/usr/local/etc/v2ray/vmesstcp","protocol": "vmess",
             "settings": {"clients": [{"id": "$uuid"}]},
-			"streamSettings": {"network": "tcp","security": "none","tcpSettings": {"acceptProxyProtocol": true,"header": {"type": "http","request": {"path": ["/$vmesstcppath"]}}}}
+            "streamSettings": {"network": "tcp","security": "none","tcpSettings": {"acceptProxyProtocol": true,"header": {"type": "http","request": {"path": ["/$vmesstcppath"]}}}}
         },
-		{
+        {
             "listen": "/usr/local/etc/v2ray/vmessws","protocol": "vmess",
             "settings": {"clients": [{"id": "$uuid"}]},
             "streamSettings": {"network": "ws","security": "none","wsSettings": {"path": "/$vmesswspath"}}
@@ -175,7 +175,7 @@ cat <<EOF >/etc/caddy/Caddyfile.json
                                         }],
                                         "terminal": true
                                     },
-									{
+                                    {
                                         "match": [{"path": ["/$vmessh2path"]}],
                                         "handle": [{
                                           "handler": "reverse_proxy",
