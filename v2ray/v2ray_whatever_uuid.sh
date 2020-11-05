@@ -3,7 +3,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export 
 
 # Tips
 [ 0 -eq 1 ] && {
-0. 通过安装v2ray+caddy同时配置vless + trojan + ss+v2ray-plugin + naiveproxy服务端，一共配置了了10种模式，其中vless和vmess各配置了3种传输方式，trojan配置了2种传输方式，均使用443端口
+0. 通过安装v2ray+caddy同时配置vless + vmess + trojan + ss+v2ray-plugin + socks + naiveproxy服务端，一共配置了了11种模式，其中vless和vmess各配置了3种传输方式，trojan配置了2种传输方式，均使用443端口
 1. 更多配置参考：https://github.com/lxhao61/integrated-examples https://github.com/v2fly/v2ray-examples
 2. 参数说明：
     uuid: 作为服务端账号和密码参数，uuid-[vless|vlessh2|vmesstcp|vmess|vmessh2|trojan|ss]作为服务端路径参数，其它客户端参数查看输出信息。自用uuid务必妥善保存，如有分享需求，建议生成一个分享专用的uuid: cat /proc/sys/kernel/random/uuid
@@ -29,6 +29,7 @@ vmesstcppath="${uuid}-vmesstcp"
 vmesswspath="${uuid}-vmess"
 vmessh2path="${uuid}-vmessh2"
 shadowsockspath="${uuid}-ss"
+sockspath="${uuid}-socks"
 ########
 
 # v2ray install
@@ -49,7 +50,8 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
                     {"dest": "/usr/local/etc/v2ray/vlessws","path": "/$vlesspath"},
                     {"dest": "/usr/local/etc/v2ray/vmessws","path": "/$vmesswspath"},
                     {"dest": "/usr/local/etc/v2ray/vmesstcp","path": "/$vmesstcppath"},
-                    {"dest": 50003,"path": "/$shadowsockspath"}
+                    {"dest": 50003,"path": "/$shadowsockspath"},
+                    {"dest": 50005,"path": "/$sockspath"}
                 ]
             },
             "streamSettings": {"network": "tcp","security": "xtls","xtlsSettings": {"alpn": ["h2","http/1.1"],"certificates": [{"certificateFile": "/usr/local/etc/v2ray/v2ray.crt","keyFile": "/usr/local/etc/v2ray/v2ray.key"}]}}
@@ -98,6 +100,10 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "port": 50004,"listen": "127.0.0.1","protocol": "shadowsocks",
             "settings": {"method": "$ssmethod","password": "$uuid","network": "tcp,udp"},
             "streamSettings": {"security": "none","network": "domainsocket","dsSettings": {"path": "/usr/local/etc/v2ray/ss"}}
+        },
+        {   "port": 50005,"listen": "127.0.0.1","protocol": "socks",
+            "settings": {"auth": "password","accounts": [{"user": "$AUUID","pass": "$AUUID"}]},
+            "streamSettings": {"network": "ws","wsSettings": {"path": "/$sockspath"}}
         },
         {   "port": 59876,"listen": "127.0.0.1","tag": "naiveproxyupstream","protocol": "socks",
             "settings": {"auth": "password","accounts": [{"user": "$uuid","pass": "$uuid"}],"udp": true}
@@ -232,12 +238,23 @@ uuid: $uuid
 wspath: $vlesspath
 h2path: $vlessh2path
 
+$(date) $domain vmess:
+uuid: $uuid
+tcppath: $vmesstcppath
+wspath: $vmesspath
+h2path: $vmessh2path
+
 $(date) $domain trojan:
 password: $uuid
 path: $trojanpath
 
 $(date) $domain shadowsocks:   
 ss://$(echo -n "${ssmethod}:${uuid}" | base64 | tr "\n" " " | sed s/[[:space:]]//g | tr -- "+/=" "-_ " | sed -e 's/ *$//g')@${domain}:443?plugin=v2ray-plugin%3Bpath%3D%2F${shadowsockspath}%3Bhost%3D${domain}%3Btls#${domain}
+
+$(date) $domain socks:
+user: $uuid
+password: $uuid
+path: $sockspath
 
 $(date) $domain naiveproxy:
 probe_resistance: $uuid.com
