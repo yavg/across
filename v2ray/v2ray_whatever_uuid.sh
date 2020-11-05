@@ -241,7 +241,7 @@ h2path: $vlessh2path
 $(date) $domain vmess:
 uuid: $uuid
 tcppath: $vmesstcppath
-wspath: $vmesspath
+wspath: $vmesswspath
 h2path: $vmessh2path
 
 $(date) $domain trojan:
