@@ -102,7 +102,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "streamSettings": {"security": "none","network": "domainsocket","dsSettings": {"path": "/usr/local/etc/v2ray/ss"}}
         },
         {   "port": 50005,"listen": "127.0.0.1","protocol": "socks",
-            "settings": {"auth": "password","accounts": [{"user": "$AUUID","pass": "$AUUID"}]},
+            "settings": {"auth": "password","accounts": [{"user": "$uuid","pass": "$uuid"}]},
             "streamSettings": {"network": "ws","wsSettings": {"path": "/$sockspath"}}
         },
         {   "port": 59876,"listen": "127.0.0.1","tag": "naiveproxyupstream","protocol": "socks",
