@@ -77,7 +77,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
         {
             "listen": "/usr/local/etc/v2ray/vmesstcp","protocol": "vmess",
             "settings": {"clients": [{"id": "$uuid"}]},
-            "streamSettings": {"network": "tcp","security": "none","tcpSettings": {"acceptProxyProtocol": true,"header": {"type": "http","request": {"path": ["/$vmesstcppath"]}}}}
+            "streamSettings": {"network": "tcp","security": "none","tcpSettings": {"header": {"type": "http","request": {"path": ["/$vmesstcppath"]}}}}
         },
         {
             "listen": "/usr/local/etc/v2ray/vmessws","protocol": "vmess",
