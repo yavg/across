@@ -163,33 +163,8 @@ cat <<EOF >/etc/caddy/Caddyfile.json
                     "listen": [":80"],
                     "routes": [
                         {
-                            "match": [
-                                {
-                                    "host": [
-                                        "$domain"
-                                    ]
-                                }
-                            ],
-                            "handle": [
-                                {
-                                    "handler": "subroute",
-                                    "routes": [
-                                        {
-                                            "handle": [
-                                                {
-                                                    "handler": "static_response",
-                                                    "headers": {
-                                                        "Location": [
-                                                            "https://{http.request.host}{http.request.uri}"
-                                                        ]
-                                                    },
-                                                    "status_code": 301
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ],
+                            "match": [{"host": ["$domain"]}],
+                            "handle": [{"handler": "subroute","routes": [{"handle": [{"handler": "static_response","headers": {"Location": ["https://{http.request.host}{http.request.uri}"]},"status_code": 301}]}]}],
                             "terminal": true
                         }
                     ]
