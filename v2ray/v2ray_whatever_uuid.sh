@@ -140,6 +140,16 @@ cat <<EOF >/etc/caddy/Caddyfile.json
         "http": {
             "servers": {
                 "srv0": {
+                    "listen": [":80"],
+                    "routes": [
+                        {
+                            "match": [{"host": ["$domain"]}],
+                            "handle": [{"handler": "subroute","routes": [{"handle": [{"handler": "static_response","headers": {"Location": ["https://{http.request.host}{http.request.uri}"]},"status_code": 301}]}]}],
+                            "terminal": true
+                        }
+                    ]
+                },
+                "srv1": {
                     "listen": ["127.0.0.1:50080"],
                     "routes": 
                     [
