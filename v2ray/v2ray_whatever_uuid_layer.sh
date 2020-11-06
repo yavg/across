@@ -161,14 +161,35 @@ cat <<EOF >/etc/caddy/Caddyfile.json
             "servers": {
                 "srv0": {
                     "listen": [":80"],
-                    "routes": 
-                    [
+                    "routes": [
                         {
-                            "match": [{"host": ["$domain"]}],
-                            "handle": [{
-                                "handler": "file_server",
-                                "root": "/usr/share/caddy"
-                            }],
+                            "match": [
+                                {
+                                    "host": [
+                                        "$domain"
+                                    ]
+                                }
+                            ],
+                            "handle": [
+                                {
+                                    "handler": "subroute",
+                                    "routes": [
+                                        {
+                                            "handle": [
+                                                {
+                                                    "handler": "static_response",
+                                                    "headers": {
+                                                        "Location": [
+                                                            "https://{http.request.host}{http.request.uri}"
+                                                        ]
+                                                    },
+                                                    "status_code": 301
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
                             "terminal": true
                         }
                     ]
