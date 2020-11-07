@@ -44,28 +44,28 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "settings": {
                 "clients": [{"id": "$uuid","flow": "$xtlsflow"}],"decryption": "none",
                 "fallbacks": [
-                    {"dest": "/usr/local/etc/v2ray/trojan"},
-                    {"dest": "/usr/local/etc/v2ray/trojanws","path": "/$trojanpath"},
-                    {"dest": "/usr/local/etc/v2ray/vlessws","path": "/$vlesspath"},
-                    {"dest": "/usr/local/etc/v2ray/vmessws","path": "/$vmesswspath"},
-                    {"dest": "/usr/local/etc/v2ray/vmesstcp","path": "/$vmesstcppath"},
+                    {"dest": "@trojan"},
+                    {"dest": "@trojanws","path": "/$trojanpath"},
+                    {"dest": "@vlessws","path": "/$vlesspath"},
+                    {"dest": "@vmesstcp","path": "/$vmesstcppath"},
+                    {"dest": "@vmessws","path": "/$vmesswspath"},  
                     {"dest": 50003,"path": "/$shadowsockspath"}
                 ]
             },
             "streamSettings": {"network": "tcp","security": "xtls","xtlsSettings": {"alpn": ["h2","http/1.1"],"certificates": [{"certificateFile": "/usr/local/etc/v2ray/v2ray.crt","keyFile": "/usr/local/etc/v2ray/v2ray.key"}]}}
         },
         {
-            "listen": "/usr/local/etc/v2ray/trojan","protocol": "trojan",
+            "listen": "@trojan","protocol": "trojan",
             "settings": {"clients": [{"password":"$uuid"}],"fallbacks": [{"dest": 50080}]},
             "streamSettings": {"security": "none","network": "tcp"}
         },
         {
-            "listen": "/usr/local/etc/v2ray/trojanws","protocol": "trojan",
+            "listen": "@trojanws","protocol": "trojan",
             "settings": {"clients": [{"password":"$uuid"}]},
             "streamSettings": {"network": "ws","wsSettings": {"path": "/$trojanpath"}}
         },
         {
-            "listen": "/usr/local/etc/v2ray/vlessws","protocol": "vless",
+            "listen": "@vlessws","protocol": "vless",
             "settings": {"clients": [{"id": "$uuid"}],"decryption": "none"},
             "streamSettings": {"network": "ws","security": "none","wsSettings": {"path": "/$vlesspath"}}
         },
@@ -75,12 +75,12 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "streamSettings": {"network": "h2","httpSettings": {"host": ["$domain"],"path": "/$vlessh2path"}}
         },
         {
-            "listen": "/usr/local/etc/v2ray/vmesstcp","protocol": "vmess",
+            "listen": "@vmesstcp","protocol": "vmess",
             "settings": {"clients": [{"id": "$uuid"}]},
             "streamSettings": {"network": "tcp","security": "none","tcpSettings": {"header": {"type": "http","request": {"path": ["/$vmesstcppath"]}}}}
         },
         {
-            "listen": "/usr/local/etc/v2ray/vmessws","protocol": "vmess",
+            "listen": "@vmessws","protocol": "vmess",
             "settings": {"clients": [{"id": "$uuid"}]},
             "streamSettings": {"network": "ws","security": "none","wsSettings": {"path": "/$vmesswspath"}}
         },
