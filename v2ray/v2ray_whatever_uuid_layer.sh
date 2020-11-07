@@ -250,6 +250,40 @@ systemctl enable caddy v2ray && systemctl restart caddy v2ray && sleep 3 && syst
 
 # info
 cat <<EOF >$TMPFILE
+{
+  "v": "2",
+  "ps": "$domain-ws",
+  "add": "$domain",
+  "port": "443",
+  "id": "$uuid",
+  "aid": "0",
+  "net": "ws",
+  "type": "none",
+  "host": "$domain",
+  "path": "$vmesswspath",
+  "tls": "tls"
+}
+EOF
+vmesswsinfo="$(echo "vmess://$(base64 -w 0 $TMPFILE)")"
+
+cat <<EOF >$TMPFILE
+{
+  "v": "2",
+  "ps": "$domain-h2",
+  "add": "$domain",
+  "port": "443",
+  "id": "$uuid",
+  "aid": "0",
+  "net": "h2",
+  "type": "none",
+  "host": "$domain",
+  "path": "$vmessh2path",
+  "tls": "tls"
+}
+EOF
+vmessh2info="$(echo "vmess://$(base64 -w 0 $TMPFILE)")"
+
+cat <<EOF >$TMPFILE
 $(date) $domain vless:
 uuid: $uuid
 wspath: $vlesspath
@@ -258,8 +292,8 @@ h2path: $vlessh2path
 $(date) $domain vmess:
 uuid: $uuid
 tcppath: $vmesstcppath
-wspath: $vmesswspath
-h2path: $vmessh2path
+ws+tls: $vmesswsinfo
+h2+tls: $vmessh2info
 
 $(date) $domain trojan:
 password: $uuid
