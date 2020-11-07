@@ -285,6 +285,7 @@ h2+tls: $vmessh2info
 $(date) $domain trojan:
 password: $uuid
 path: $trojanpath
+nowsLink: trojan://$uuid@$domain:443#$domain-trojan
 
 $(date) $domain shadowsocks:   
 ss://$(echo -n "${ssmethod}:${uuid}" | base64 | tr "\n" " " | sed s/[[:space:]]//g | tr -- "+/=" "-_ " | sed -e 's/ *$//g')@${domain}:443?plugin=v2ray-plugin%3Bpath%3D%2F${shadowsockspath}%3Bhost%3D${domain}%3Btls#${domain}
