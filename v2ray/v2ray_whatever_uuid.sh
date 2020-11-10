@@ -97,7 +97,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
         {
             "port": 50004,"listen": "127.0.0.1","protocol": "shadowsocks",
             "settings": {"method": "$ssmethod","password": "$uuid","network": "tcp,udp"},
-            "streamSettings": {"security": "none","network": "domainsocket","dsSettings": {"path": "/usr/local/etc/v2ray/ss"}}
+            "streamSettings": {"security": "none","network": "domainsocket","dsSettings": {"path": "/usr/local/etc/v2ray/ss","abstract": true}}
         },
         {   "port": 59876,"listen": "127.0.0.1","tag": "naiveproxyupstream","protocol": "socks",
             "settings": {"auth": "password","accounts": [{"user": "$uuid","pass": "$uuid"}],"udp": true}
