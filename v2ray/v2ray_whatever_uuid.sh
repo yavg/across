@@ -107,7 +107,7 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
     [
         {"protocol": "freedom","tag": "direct","settings": {}},
         {"protocol": "blackhole","tag": "blocked","settings": {}},
-        {"protocol": "freedom","tag": "twotag","streamSettings": {"network": "domainsocket","dsSettings": {"path": "/usr/local/etc/v2ray/ss"}}}
+        {"protocol": "freedom","tag": "twotag","streamSettings": {"network": "domainsocket","dsSettings": {"path": "/usr/local/etc/v2ray/ss","abstract": true}}}
     ],
 
     "routing": 
