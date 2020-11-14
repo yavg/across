@@ -21,7 +21,7 @@ fi
 if [[ "$1" == "cloud" ]]; then
     cat /etc/apt/sources.list | grep -q "$backports_version" || echo -e "deb http://deb.debian.org/debian $backports_version main" >> /etc/apt/sources.list
     apt update
-    apt -t $backports_version install linux-image-cloud-amd64 linux-headers-cloud-amd64 --install-recommends -y
+    apt -t $backports_version install linux-image-cloud-amd64 linux-headers-cloud-amd64 -y
 fi
 
 # old kernel remove 
@@ -35,7 +35,7 @@ cat /etc/sysctl.conf | grep -q "net.ipv4.tcp_congestion_control = bbr" || echo "
 sysctl -p
 
 # end
-update-grub2
+update-grub
 if [[ "$1" == "cloud" ]]; then
     read -p "The system needs to reboot. Do you want to restart system? [y/n]" is_reboot
     if [[ ${is_reboot} == "y" || ${is_reboot} == "Y" ]]; then
