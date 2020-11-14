@@ -1,7 +1,8 @@
 #!/bin/bash
 # Usage: debian 10 & 9 && linux-image-cloud-amd64 bbr
 #   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh)        # 仅开启bbr
-#   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh) cloud  # 危险操作: 升级最新cloud内核并开启bbr
+#   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh) cloud  # 危险操作: 安装cloud内核并开启bbr
+#   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh) old    # 危险操作: 卸载未使用内核并开启bbr
 #   uninstall: apt purge -t buster-backports linux-image-cloud-amd64 linux-headers-cloud-amd64
 ### tips: personal use only
 
@@ -18,9 +19,14 @@ fi
 
 # cloud kernel install
 if [[ "$1" == "cloud" ]]; then
-	cat /etc/apt/sources.list | grep -q "$backports_version" || echo -e "deb http://deb.debian.org/debian $backports_version main" >> /etc/apt/sources.list
+    cat /etc/apt/sources.list | grep -q "$backports_version" || echo -e "deb http://deb.debian.org/debian $backports_version main" >> /etc/apt/sources.list
     apt update
-    apt install linux-image-cloud-amd64 linux-headers-cloud-amd64 -y
+    apt -t $backports_version install linux-image-cloud-amd64 linux-headers-cloud-amd64 -y
+fi
+
+# old kernel remove 
+if [[ "$1" == "old" ]]; then
+    echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs apt --purge -y autoremove
 fi
 
 # bbr 
@@ -30,5 +36,13 @@ cat /etc/sysctl.conf | grep -q "net.core.default_qdisc = fq" || echo "net.core.d
 cat /etc/sysctl.conf | grep -q "net.ipv4.tcp_congestion_control = bbr" || echo "net.ipv4.tcp_congestion_control = bbr" >> /etc/sysctl.conf
 sysctl -p
 
-# reboot
-[[ "$1" == "cloud" ]] && update-grub2 && echo "OK, OS rebooting.. " && reboot
+# end
+update-grub2
+if [[ "$1" == "cloud" ]]; then
+    read -p "The system needs to reboot. Do you want to restart system? [y/n]" is_reboot
+    if [[ ${is_reboot} == "y" || ${is_reboot} == "Y" ]]; then
+        reboot
+    else
+        echo "Reboot has been canceled..." && exit 0
+    fi
+fi
