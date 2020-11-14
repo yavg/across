@@ -41,7 +41,7 @@ update-grub2
 if [[ "$1" == "cloud" ]]; then
     read -p "The system needs to reboot. Do you want to restart system? [y/n]" is_reboot
     if [[ ${is_reboot} == "y" || ${is_reboot} == "Y" ]]; then
-        reboot
+        echo "Rebooting..." && reboot
     else
         echo "Reboot has been canceled..." && exit 0
     fi
