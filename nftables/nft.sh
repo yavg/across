@@ -48,4 +48,4 @@ table inet my_table {
 }
 EOF
 
-systemctl enable nftables && systemctl restart nftables && systemctl status nftables
+systemctl enable nftables && systemctl restart nftables && nft list ruleset && systemctl status nftables
