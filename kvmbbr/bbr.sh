@@ -21,7 +21,7 @@ fi
 if [[ "$1" == "cloud" ]]; then
     cat /etc/apt/sources.list | grep -q "$backports_version" || echo -e "deb http://deb.debian.org/debian $backports_version main" >> /etc/apt/sources.list
     apt update
-    apt -t $backports_version install linux-image-cloud-amd64 linux-headers-cloud-amd64 -y
+    apt -t $backports_version install linux-image-cloud-amd64 linux-headers-cloud-amd64 --install-recommends -y
 fi
 
 # old kernel remove 
