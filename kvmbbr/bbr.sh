@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Usage: debian 10 & 9 && linux-image-cloud-amd64 bbr: 
-#   export qdisc=cake && bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh)   # cake+bbr
-#   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh)                        # 仅开启bbr
-#   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh) cloud                  # 危险操作: 安装cloud内核并开启bbr
-#   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh) removeold              # 危险操作: 卸载未使用内核并开启bbr
+#   export qdisc=fq   && bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh)                        # 仅开启fq+bbr
+#   export qdisc=cake && bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh)                        # 仅开启cake+bbr
+#   export qdisc=cake && bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh) cloud                  # 危险操作: 安装cloud内核并开启cake+bbr
+#   export qdisc=cake && bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh) removeold              # 危险操作: 卸载未使用内核并开启cake+bbr
 ###
 
 # only root can run this script
