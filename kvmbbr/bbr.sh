@@ -1,10 +1,9 @@
 #!/bin/bash
-# Usage: debian 10 & 9 && linux-image-cloud-amd64 bbr
+# Usage: debian 10 & 9 && linux-image-cloud-amd64 bbr && personal use only
 #   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh)        # 仅开启bbr
 #   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh) cloud  # 危险操作: 安装cloud内核并开启bbr
 #   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh) old    # 危险操作: 卸载未使用内核并开启bbr
-#   uninstall: apt purge -t buster-backports linux-image-cloud-amd64 linux-headers-cloud-amd64
-### tips: personal use only
+###
 
 # only root can run this script
 [[ $EUID -ne 0 ]] && echo "Error, This script must be run as root!" && exit 1
