@@ -1,7 +1,7 @@
 #!/bin/bash
 # Usage: debian 10 & 9 && linux-image-cloud-amd64 bbr
 #   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh)        # 仅开启bbr
-#   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh) cloud  # 危险操作: 卸载旧内核,升级最新cloud内核并开启bbr
+#   bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/kvmbbr/bbr.sh) cloud  # 危险操作: 升级最新cloud内核并开启bbr
 #   uninstall: apt purge -t buster-backports linux-image-cloud-amd64 linux-headers-cloud-amd64
 ### tips: personal use only
 
@@ -17,11 +17,10 @@ else
 fi
 
 # cloud kernel install
-echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs apt --purge -y autoremove
 if [[ "$1" == "cloud" ]]; then
-    echo -e "deb http://deb.debian.org/debian $backports_version main\ndeb http://http.us.debian.org/debian sid main" > /etc/apt/sources.list.d/$backports_version.list
-    apt update 
-    apt -t $backports_version install linux-image-cloud-amd64 linux-headers-cloud-amd64 -y
+	cat /etc/apt/sources.list | grep -q "$backports_version" || echo -e "deb http://deb.debian.org/debian $backports_version main" >> /etc/apt/sources.list
+    apt update
+    apt install linux-image-cloud-amd64 linux-headers-cloud-amd64 -y
 fi
 
 # bbr 
