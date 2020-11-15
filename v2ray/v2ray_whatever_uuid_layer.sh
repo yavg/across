@@ -127,7 +127,7 @@ caddyURL="$(wget -qO-  https://api.github.com/repos/caddyserver/caddy/releases |
 wget -O $TMPFILE $caddyURL && dpkg -i $TMPFILE
 
 # caddy with naive fork of forwardproxy: https://github.com/klzgrad/forwardproxy
-naivecaddyURL="https://github.com/mixool/across/raw/master/source/caddyl4.gz"
+naivecaddyURL="https://github.com/mixool/across/raw/master/source/caddy.gz"
 rm -rf /usr/bin/caddy
 wget --no-check-certificate -O - $naivecaddyURL | gzip -d > /usr/bin/caddy && chmod +x /usr/bin/caddy
 sed -i "s/caddy\/Caddyfile$/caddy\/Caddyfile\.json/g" /lib/systemd/system/caddy.service && systemctl daemon-reload
