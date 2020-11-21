@@ -32,7 +32,7 @@ shadowsockspath="${uuid}-ss"
 ########
 
 # v2ray install
-bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)
+bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --version v4.32.1
 
 # config v2ray
 cat <<EOF >/usr/local/etc/v2ray/config.json
