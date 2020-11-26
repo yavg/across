@@ -1,38 +1,25 @@
 #!/usr/bin/env bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export PATH
 
-# Tips
-[ 0 -eq 1 ] && {
-0. 通过安装v2ray+caddy同时配置vless + vmess + trojan + ss+v2ray-plugin + naiveproxy服务端，一共配置了了10种模式，其中vless和vmess各配置了3种传输方式，trojan配置了2种传输方式，均使用443端口
-1. 更多配置参考：https://github.com/lxhao61/integrated-examples https://github.com/v2fly/v2ray-examples
-2. 参数说明：
-    uuid: 作为服务端账号和密码参数，uuid-[vless|vlessh2|vmesstcp|vmess|vmessh2|trojan|ss]作为服务端路径参数，其它客户端参数查看输出信息。自用uuid务必妥善保存，如有分享需求，建议生成一个分享专用的uuid: cat /proc/sys/kernel/random/uuid
-    my.domain.com: 域名，证书使用acme.sh的standalone webserver模式申请, 如有其它服务运在80端口，按需修改acme.sh命令的pre-hook和post-hook参数
-3. install: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/v2ray_whatever_uuid.sh) uuid my.domain.com
-4. uninstall: 
-    apt purge caddy -y
-    bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray
-    /root/.acme.sh/acme.sh --uninstall; rm -rf /root/.acme.sh
-}
-
 # tempfile & rm it when exit
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
 
 ########
 [[ $# != 2 ]] && echo Err  !!! Useage: bash this_script.sh uuid my.domain.com && exit 1
 uuid="$1" && domain="$2"
-xtlsflow="xtls-rprx-direct" && ssmethod="none"
-trojanpath="${uuid}-trojan"
 vlesspath="${uuid}-vless"
 vlessh2path="${uuid}-vlessh2"
 vmesstcppath="${uuid}-vmesstcp"
 vmesswspath="${uuid}-vmess"
 vmessh2path="${uuid}-vmessh2"
+trojanpath="${uuid}-trojan"
 shadowsockspath="${uuid}-ss"
+ssmethod="none"
 ########
 
 # v2ray install
-bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --version v4.32.1
+bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)
+chown -R nobody:nogroup /usr/local/etc/v2ray
 
 # config v2ray
 cat <<EOF >/usr/local/etc/v2ray/config.json
@@ -40,29 +27,19 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
     "log": {"loglevel": "warning"},
     "inbounds": [
         {
-            "port": 443,"protocol": "vless",
+            "port": 50000,"listen": "127.0.0.1","protocol": "vless",
             "settings": {
-                "clients": [{"id": "$uuid","flow": "$xtlsflow"}],"decryption": "none",
+                "clients": [{"id": "$uuid"}],"decryption": "none",
                 "fallbacks": [
+                    {"dest": "@vlessws","path": "/$vlesspath"},
+                    {"dest": "@vmessws","path": "/$vmesswspath"},
+                    {"dest": "@vmesstcp","path": "/$vmesstcppath"},
                     {"dest": "@trojan"},
                     {"dest": "@trojanws","path": "/$trojanpath"},
-                    {"dest": "@vlessws","path": "/$vlesspath"},
-                    {"dest": "@vmesstcp","path": "/$vmesstcppath"},
-                    {"dest": "@vmessws","path": "/$vmesswspath"},  
                     {"dest": 50003,"path": "/$shadowsockspath"}
                 ]
             },
-            "streamSettings": {"network": "tcp","security": "xtls","xtlsSettings": {"alpn": ["h2","http/1.1"],"certificates": [{"certificateFile": "/usr/local/etc/v2ray/v2ray.crt","keyFile": "/usr/local/etc/v2ray/v2ray.key"}]}}
-        },
-        {
-            "listen": "@trojan","protocol": "trojan",
-            "settings": {"clients": [{"password":"$uuid"}],"fallbacks": [{"dest": 50080}]},
-            "streamSettings": {"security": "none","network": "tcp"}
-        },
-        {
-            "listen": "@trojanws","protocol": "trojan",
-            "settings": {"clients": [{"password":"$uuid"}]},
-            "streamSettings": {"network": "ws","wsSettings": {"path": "/$trojanpath"}}
+            "streamSettings": {"network": "tcp","security": "none"}
         },
         {
             "listen": "@vlessws","protocol": "vless",
@@ -88,6 +65,16 @@ cat <<EOF >/usr/local/etc/v2ray/config.json
             "port": 50002,"listen": "127.0.0.1","protocol": "vmess",
             "settings": {"clients": [{"id": "$uuid"}]},
             "streamSettings": {"network": "h2","httpSettings": {"host": ["$domain"],"path": "/$vmessh2path"}}
+        },
+        {
+            "listen": "@trojan","protocol": "trojan",
+            "settings": {"clients": [{"password":"$uuid"}],"fallbacks": [{"dest": 50080}]},
+            "streamSettings": {"security": "none","network": "tcp"}
+        },
+        {
+            "listen": "@trojanws","protocol": "trojan",
+            "settings": {"clients": [{"password":"$uuid"}]},
+            "streamSettings": {"network": "ws","wsSettings": {"path": "/$trojanpath"}}
         },
         {
             "port": "50003","listen": "127.0.0.1","tag": "onetag","protocol": "dokodemo-door",
@@ -137,6 +124,26 @@ cat <<EOF >/etc/caddy/Caddyfile.json
 {
     "admin": {"disabled": true},
     "apps": {
+        "tls": {"certificates": {"automate": ["$domain"]},"automation": {"policies": [{"issuer": {"challenges": {"tls-alpn": {"disabled": true}},"module": "acme"},"subjects": ["$domain"]}]}},
+        "layer4": {
+            "servers": {
+                "example0": {
+                    "listen": [":443"],
+                    "routes": [
+                        {
+                            "match": [{"tls": {"sni": ["$domain"]}}],
+                            "handle": [
+                                {"handler": "tls"},
+                                {
+                                    "handler": "proxy",
+                                    "upstreams": [{"dial": ["127.0.0.1:50000"]}]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
         "http": {
             "servers": {
                 "srv0": {
@@ -224,13 +231,6 @@ cat <<EOF >/etc/caddy/Caddyfile.json
     }
 }
 EOF
-
-# acme.sh installcert
-apt install socat -y
-curl https://get.acme.sh | sh && source  ~/.bashrc
-/root/.acme.sh/acme.sh --upgrade --auto-upgrade
-/root/.acme.sh/acme.sh --issue -d $domain --standalone --keylength ec-256 --pre-hook "systemctl stop caddy v2ray" --post-hook "/root/.acme.sh/acme.sh --installcert -d $domain --ecc --fullchain-file /usr/local/etc/v2ray/v2ray.crt --key-file /usr/local/etc/v2ray/v2ray.key --reloadcmd \"systemctl restart caddy v2ray\""
-chown -R nobody:nogroup /usr/local/etc/v2ray || chown -R nobody:nobody /usr/local/etc/v2ray
 
 # systemctl service info
 systemctl enable caddy v2ray && systemctl restart caddy v2ray && sleep 3 && systemctl status caddy v2ray | grep -A 2 "service"
