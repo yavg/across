@@ -1,5 +1,5 @@
 ###### Tips
-* 通过[caddy](https://github.com/caddyserver/caddy/releases)和[xray](https://github.com/XTLS/Xray-core/releases)以及[acme.sh](https://github.com/acmesh-official/acme.sh)配置`vless + vmess + trojan + ss+xray-plugin + naiveproxy`**共用443端口**  
+* 通过[caddy](https://github.com/caddyserver/caddy/releases)|[xray](https://github.com/XTLS/Xray-core/releases)|[acme.sh](https://github.com/acmesh-official/acme.sh)配置`vless + vmess + trojan + ss+xray-plugin + naiveproxy`**共用443端口**  
 * 参考：[lxhao61](https://github.com/lxhao61/integrated-examples) && [xray](https://github.com/XTLS/Xray-examples)  
 * 安装:
 ```bash
