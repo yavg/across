@@ -1,5 +1,5 @@
 ###### Tips
-* 通过安装xray](https://github.com/XTLS/Xray-core/releases)和[caddy](https://github.com/caddyserver/caddy/releases)同时支持配置`vless + vmess + trojan + ss+xray-plugin + naiveproxy`10种模式，其中`vless`和`vmess`各配置了3种传输方式，`trojan`配置了2种传输方式，**共用443端口**  
+* 通过安装[xray](https://github.com/XTLS/Xray-core/releases)和[caddy](https://github.com/caddyserver/caddy/releases)同时支持配置`vless + vmess + trojan + ss+xray-plugin + naiveproxy`10种模式，其中`vless`和`vmess`各配置了3种传输方式，`trojan`配置了2种传输方式，**共用443端口**  
 * 更多配置参考：[lxhao61/integrated-examples](https://github.com/lxhao61/integrated-examples) && [xray/Xray-examples](https://github.com/XTLS/Xray-examples)  
 * 参数说明：
   1. `uuid`: 作为服务端账号和密码和路径等参数，详情查看输出信息,生成uuid命令: `cat /proc/sys/kernel/random/uuid`
