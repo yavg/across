@@ -8,5 +8,5 @@ bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/v2ra
 * 卸载:
 ```bash
 apt purge caddy -y
-bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; systemctl disable v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray
+bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; systemctl disable v2ray; systemctl stop v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray
 ```
