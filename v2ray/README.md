@@ -3,7 +3,7 @@
 * 参考：[v2fly-examples](https://github.com/v2fly/v2ray-examples) && [lxhao61](https://github.com/lxhao61/integrated-examples)
 * 安装:
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/v2ray_whatever_uuid.sh) uuid my.domain.com
+bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/v2ray/v2ray_whatever_uuid.sh) my.domain.com
 ```
 * 卸载:
 ```bash

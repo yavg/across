@@ -5,8 +5,9 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export 
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
 
 ########
-[[ $# != 3 ]] && echo Err  !!! Useage: bash this_script.sh cloudflare_api uuid my.domain.com && exit 1
-cloudflare_api="$1" && uuid="$2" && domain="$3"
+[[ $# != 2 ]] && [[ $# != 3 ]] && echo Err  !!! Useage: bash this_script.sh uuid my.domain.com && exit 1
+[[ $# == 2 ]] && cloudflare_api="$1" && uuid="$(cat /proc/sys/kernel/random/uuid)" && domain="$2"
+[[ $# == 3 ]] && cloudflare_api="$1" && uuid="$2" && domain="$3"
 vlesspath="${uuid}-vless"
 vlessh2path="${uuid}-vlessh2"
 vmesstcppath="${uuid}-vmesstcp"

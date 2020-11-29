@@ -5,8 +5,9 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export 
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
 
 ########
-[[ $# != 2 ]] && echo Err  !!! Useage: bash this_script.sh uuid my.domain.com && exit 1
-uuid="$1" && domain="$2"
+[[ $# != 1 ]] && [[ $# != 2 ]] && echo Err  !!! Useage: bash this_script.sh uuid my.domain.com && exit 1
+[[ $# == 1 ]] && uuid="$(cat /proc/sys/kernel/random/uuid)" && domain="$2"
+[[ $# == 2 ]] && uuid="$1" && domain="$2"
 xtlsflow="xtls-rprx-direct" && ssmethod="none"
 trojanpath="${uuid}-trojan"
 vlesspath="${uuid}-vless"
