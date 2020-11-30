@@ -1,5 +1,6 @@
 ###### Tips
 * 订阅转换器安装脚本,需先把节点放入/etc/links.diy文件,每行一个  
+* [subconverter](https://github.com/tindy2013/subconverter)  
 * 安装:
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/subconverter/run.sh) my.domain.com
