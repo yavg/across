@@ -6,9 +6,10 @@
 # 需先把节点放入/etc/links.diy文件,每行一个
 [[ ! -f /etc/links.diy ]] && echo Sorry, no File: /etc/links.diy && exit 1
 
-# 需传入域名参数,token使用随机uuid
-[[ $# != 1 ]] && echo Err  !!! Useage: bash this_script.sh my.domain.com && exit 1 || domain="$1"
-token="$(cat /proc/sys/kernel/random/uuid)"
+# 需传入域名参数,如未输入token参数,则使用随机uuid作为token
+[[ $# != 1 ]] && [[ $# != 2 ]]&& echo Err  !!! Useage: bash this_script.sh uuid my.domain.com && exit 1
+[[ $# == 1 ]] && token="$(cat /proc/sys/kernel/random/uuid)" && domain="$1"
+[[ $# == 2 ]] && token="$1" && domain="$2"
 
 # tempfile & rm it when exit
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
