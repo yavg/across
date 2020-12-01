@@ -43,28 +43,9 @@ EOF
 sed -i -e "s/listen=0.0.0.0/listen=127.0.0.1/g" -e "s/api_access_token=password/api_access_token=$token/g" /root/subconverter/pref.ini 
 
 # 生成订阅节点信息配置文件
-cat <<EOF > /root/subconverter/profiles/clash.ini
+cat <<EOF > /root/subconverter/profiles/auto.ini
 [Profile]
-target=clash
-url=$(cat /etc/links.diy | tr "\n" "|")
-EOF
-
-cat <<EOF > /root/subconverter/profiles/quanx.ini
-[Profile]
-target=quanx
-url=$(cat /etc/links.diy | tr "\n" "|")
-EOF
-
-cat <<EOF > /root/subconverter/profiles/surge.ini
-[Profile]
-target=surge
-surge_ver=4
-url=$(cat /etc/links.diy | tr "\n" "|")
-EOF
-
-cat <<EOF > /root/subconverter/profiles/v2ray.ini
-[Profile]
-target=v2ray
+target=auto
 url=$(cat /etc/links.diy | tr "\n" "|")
 EOF
 
@@ -73,7 +54,4 @@ systemctl enable caddy subconverter && systemctl daemon-reload && systemctl rest
 
 # info
 echo $(date) Visit: https://$domain
-echo; echo For clash: "https://$domain/getprofile?name=profiles/clash.ini&token=$token"
-echo; echo For quanx: "https://$domain/getprofile?name=profiles/quanx.ini&token=$token"
-echo; echo For surge: "https://$domain/getprofile?name=profiles/surge.ini&token=$token"
-echo; echo For v2ray: "https://$domain/getprofile?name=profiles/v2ray.ini&token=$token"
+echo; echo For Subconverter: "https://$domain/getprofile?name=profiles/auto.ini&token=$token"
