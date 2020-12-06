@@ -54,8 +54,8 @@ table inet my_table {
         
         iif lo accept
 
-        tcp dport { http, https } ip saddr $SAFE_TRAFFIC_IPS accept
-        udp dport { http, https } ip saddr $SAFE_TRAFFIC_IPS accept
+        tcp dport { http, https } ip saddr \$SAFE_TRAFFIC_IPS accept
+        udp dport { http, https } ip saddr \$SAFE_TRAFFIC_IPS accept
         tcp dport $(cat /etc/ssh/sshd_config | grep -oE "^Port [0-9]*$" | grep -oE "[0-9]*" || echo 22) ct state new limit rate 5/minute counter accept
         
         counter comment "count dropped packets"
