@@ -36,3 +36,4 @@ EOF
 
 # systemctl service info
 systemctl enable caddy speedtest-rs && systemctl restart caddy speedtest-rs && sleep 3 && systemctl status caddy speedtest-rs | grep -A 2 "service"
+echo $(date) Visit: https://$domain
