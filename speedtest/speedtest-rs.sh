@@ -31,10 +31,8 @@ wget -O $TMPFILE $caddyURL && dpkg -i $TMPFILE
 
 cat <<EOF >/etc/caddy/Caddyfile
 $domain
-root /usr/share/caddy
 reverse_proxy 127.0.0.1:18088
-}
 EOF
 
 # systemctl service info
-systemctl enable caddy v2ray && systemctl restart caddy v2ray && sleep 3 && systemctl status caddy v2ray | grep -A 2 "service"
+systemctl enable caddy speedtest-rs && systemctl restart caddy speedtest-rs && sleep 3 && systemctl status caddy speedtest-rs | grep -A 2 "service"
