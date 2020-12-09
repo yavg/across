@@ -4,8 +4,8 @@
 
 #
 apt autoremove
-apt clean
 apt autoclean
+apt clean
 #
 dpkg --list | grep "^rc" | cut -d " " -f 3 | xargs dpkg --purge
 # logs
