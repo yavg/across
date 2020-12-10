@@ -6,19 +6,22 @@
 # tempfile & rm it when exit
 trap 'rm -f "$TMPFILE"' EXIT && TMPFILE=$(mktemp) || exit 1
 
+### dependencies
+command -v unzip > /dev/null 2>&1 || { echo "Please install unzip： apt update && apt install unzip -y"; exit 1; }
+
 # domain
 [[ $# == 1 ]] && domain="$1" || { echo Err !!! Useage: bash this_script.sh my.domain.com; exit 1; }
 
 # speedtest-rs 
 URL="$(wget -qO- https://api.github.com/repos/zhanghanyun/speedtest-rs/releases/latest | grep -E "browser_download_url.*linux-amd64" | cut -f4 -d\")"
 rm -rf /usr/bin/speedtest-rs
-wget -O /usr/bin/speedtest-rs $URL && chmod +x /usr/bin/speedtest-rs
+wget -O $TMPFILE $URL && unzip $TMPFILE -d /usr/bin/ && chmod +x /usr/bin/speedtest-rs
 
 cat <<EOF > /etc/systemd/system/speedtest-rs.service
 [Unit]
 Description=speedtest-rs
 [Service]
-ExecStart=/usr/bin/speedtest-rs --port 18088
+ExecStart=/usr/bin/speedtest-rs --ip 127.0.0.1 --port 18088
 Restart=always
 User=root
 [Install]
