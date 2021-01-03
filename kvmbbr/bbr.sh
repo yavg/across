@@ -27,7 +27,9 @@ fi
 
 # remove old kernel  
 if [[ "$1" == "removeold" ]]; then
-    echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -n '/'`uname -r`'/q;p') $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -n '/'"$(uname -r | sed "s/\([0-9.-]*\)-\([^0-9]\+\)/\1/")"'/q;p') | xargs apt --purge -y autoremove
+    name=$(uname -r | awk -F'-' 'BEGIN { OFS="-" } {print $1,$2}')
+    echo $(dpkg --list | grep linux-image | awk '{ print $2 }' | sort -V | sed -e "s/.*$(uname -r)//g" -e "s/linux-image-cloud-amd64//g" | tr "\n" " ") | xargs apt --purge -y autoremove
+    echo $(dpkg --list | grep linux-headers | awk '{ print $2 }' | sort -V | sed -e "s/.*$name.*//g" -e "s/linux-headers-cloud-amd64//g" | tr "\n" " ") | xargs apt --purge -y autoremove
     update-grub
 fi
 
