@@ -8,6 +8,6 @@ bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/xray/xray_
 * 卸载:
 ```bash
 apt purge caddy -y
-bash <(curl -L https://raw.githubusercontent.com/XTLS/Xray-install/main/install-release.sh) --remove; systemctl disable xray; systemctl stop xray; rm -rf /usr/local/etc/xray /var/log/xray
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ remove --purge
 /root/.acme.sh/acme.sh --uninstall; rm -rf /root/.acme.sh
 ```

@@ -19,7 +19,7 @@ shadowsockspath="${uuid}-ss"
 ########
 
 # xray install
-bash <(curl -L https://raw.githubusercontent.com/XTLS/Xray-install/main/install-release.sh)
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u root
 
 # config xray
 cat <<EOF >/usr/local/etc/xray/config.json
@@ -145,8 +145,8 @@ cat <<EOF >/etc/caddy/Caddyfile.json
                                 "handler": "forward_proxy",
                                 "hide_ip": true,
                                 "hide_via": true,
-                                "auth_user": "$uuid",
-                                "auth_pass": "$uuid",
+                                "auth_user_deprecated": "$uuid",
+                                "auth_pass_deprecated": "$uuid",
                                 "probe_resistance": {"domain": "$uuid.com"},
                                 "upstream": "socks5://$uuid:$uuid@127.0.0.1:59876"
                             }]
@@ -217,7 +217,6 @@ apt install socat -y
 curl https://get.acme.sh | sh && source  ~/.bashrc
 /root/.acme.sh/acme.sh --upgrade --auto-upgrade
 /root/.acme.sh/acme.sh --issue -d $domain --standalone --keylength ec-256 --pre-hook "systemctl stop caddy xray" --post-hook "/root/.acme.sh/acme.sh --installcert -d $domain --ecc --fullchain-file /usr/local/etc/xray/xray.crt --key-file /usr/local/etc/xray/xray.key --reloadcmd \"systemctl restart caddy xray\""
-chown -R nobody:nogroup /usr/local/etc/xray || chown -R nobody:nobody /usr/local/etc/xray
 
 # systemctl service info
 systemctl enable caddy xray && systemctl restart caddy xray && sleep 3 && systemctl status caddy xray | grep -A 2 "service"

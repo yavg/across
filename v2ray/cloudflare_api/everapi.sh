@@ -166,8 +166,8 @@ cat <<EOF >/etc/caddy/Caddyfile.json
                                 "handler": "forward_proxy",
                                 "hide_ip": true,
                                 "hide_via": true,
-                                "auth_user": "$uuid",
-                                "auth_pass": "$uuid",
+                                "auth_user_deprecated": "$uuid",
+                                "auth_pass_deprecated": "$uuid",
                                 "probe_resistance": {"domain": "$uuid.com"},
                                 "upstream": "socks5://$uuid:$uuid@127.0.0.1:59876"
                             }]
