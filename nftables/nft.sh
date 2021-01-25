@@ -14,6 +14,7 @@ flush ruleset
 table inet my_table {
     set blackhole {
         type ipv4_addr
+        size 65535
         flags dynamic,timeout
         timeout 5d
     }
