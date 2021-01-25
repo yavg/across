@@ -20,7 +20,7 @@
 }
 
 ### dependencies
-command -v nft > /dev/null 2>&1 || { echo "Please install nftables： apt update && apt install nftables -y"; exit 1; }
+command -v nft > /dev/null 2>&1 || { echo "Please install nftables： apt update && apt -t buster-backports install nftables -y"; exit 1; }
 
 ###
 [[ ! -f /etc/nft.diy ]] && echo Sorry, no File: /etc/nft.diy && exit 1

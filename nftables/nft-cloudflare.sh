@@ -3,7 +3,7 @@
 # Wiki: debian buster nftables https://wiki.archlinux.org/index.php/Nftables
 
 # dependencies
-command -v nft > /dev/null 2>&1 || { echo >&2 "Please install nftables： apt update && apt install nftables -y"; exit 1; }
+command -v nft > /dev/null 2>&1 || { echo >&2 "Please install nftables： apt update && apt -t buster-backports install nftables -y"; exit 1; }
 
 # nftables
 cat <<EOF > /etc/nftables.conf
@@ -30,6 +30,13 @@ define SAFE_TRAFFIC_IPS = {
 }
 
 table inet my_table {
+    set blackhole {
+        type ipv4_addr
+        size 65536
+        flags dynamic,timeout
+        timeout 5m
+    }
+    
     chain my_input {
         type filter hook input priority 0; policy drop;
         
@@ -49,6 +56,9 @@ table inet my_table {
 
         tcp dport { http, https } ip saddr \$SAFE_TRAFFIC_IPS accept
         udp dport { http, https } ip saddr \$SAFE_TRAFFIC_IPS accept
+        
+        tcp dport $(cat /etc/ssh/sshd_config | grep -oE "^Port [0-9]*$" | grep -oE "[0-9]*" || echo 22) limit rate over 5/minute add @blackhole { ip saddr }
+        ip saddr @blackhole counter drop
         tcp dport $(cat /etc/ssh/sshd_config | grep -oE "^Port [0-9]*$" | grep -oE "[0-9]*" || echo 22) ct state new limit rate 5/minute counter accept
         
         counter comment "count dropped packets"
