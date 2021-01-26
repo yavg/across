@@ -1,6 +1,6 @@
 #!/bin/bash
 # Usage:
-#   curl https://raw.githubusercontent.com/mixool/across/master/ssh/securityssh.sh | bash
+#   bash <(wget -qO- https://raw.githubusercontent.com/mixool/across/master/ssh/securityssh.sh)
 
 # only root can run this script
 [[ $EUID -ne 0 ]] && echo "Error, This script must be run as root!" && exit 1
