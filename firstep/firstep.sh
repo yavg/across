@@ -5,6 +5,9 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export 
 # only root can run this script
 [[ $EUID -ne 0 ]] && echo "Error, This script must be run as root!" && exit 1
 
+# tempfile & rm it when exit
+trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
+
 # sources.list backports 
 version=$(cat /etc/os-release | grep -oE "VERSION_ID=\"(9|10)\"" | grep -oE "(9|10)")
 if [[ $version == "9" ]]; then
@@ -17,3 +20,11 @@ cat /etc/apt/sources.list | grep -q "$backports_version" || echo -e "deb http://
 # apt install 
 apt update
 apt install apt-transport-https ca-certificates curl vim wget -y
+apt -t buster-backports install nftables -y
+
+# timezone
+timedatectl set-timezone Asia/Shanghai
+
+# clean
+apt autoremove -y --purge
+apt clean
