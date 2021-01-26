@@ -25,19 +25,19 @@ echo; read -p "is_confirm? [y/n]" is_confirm
 if [[ ${is_confirm} == "y" || ${is_confirm} == "Y" ]]; then
     # backup config
     bakname=$(date +%N) && cp /etc/ssh/sshd_config /etc/ssh/sshd_config_$bakname
+    
     # change port
-    if grep -qwE "^Port\ [0-9]*" /etc/ssh/sshd_config; then
-        sed -i "s/^Port\ [0-9]*/Port\ ${SSH_PORT}/g" /etc/ssh/sshd_config
-    else
-        sed -i "/^#Port\ [0-9]*/a Port\ ${SSH_PORT}" /etc/ssh/sshd_config
-    fi
+    [[ $(grep -wE "^Port\ [0-9]*" /etc/ssh/sshd_config) != "" ]] && sed -i "s/^Port\ [0-9]*/Port\ ${SSH_PORT}/g" /etc/ssh/sshd_config || sed -i "/^#Port\ [0-9]*/a Port\ ${SSH_PORT}" /etc/ssh/sshd_config
+    
     # set root rsa_pub_key login without-password
     [[ ! -d "/root/.ssh" ]] && mkdir -p "/root/.ssh" && chmod 700 /root/.ssh
     echo $RSA_PUB_KEY >>/root/.ssh/authorized_keys
     sort -u /root/.ssh/authorized_keys -o /root/.ssh/authorized_keys
     sed -i "s/PermitRootLogin.*/PermitRootLogin without-password/g" /etc/ssh/sshd_config
+    
     # restart ssh
     service ssh restart
+    
     # info
     echo; echo "$(date) ssh port updated to ${SSH_PORT}, please login with authorized_keys, backup file: /etc/ssh/sshd_config_$bakname"
 else
