@@ -6,7 +6,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export 
 trap 'rm -f "$TMPFILE"' EXIT; TMPFILE=$(mktemp) || exit 1
 
 # get ips
-URL="https://gitee.com/xueweihan/codes/6g793pm2k1hacwfbyesl464/raw?blob_name=GitHub520.yml"
+URL="https://cdn.jsdelivr.net/gh/521xueweihan/GitHub520@main/hosts"
 wget -qO $TMPFILE $URL
 
 # save
