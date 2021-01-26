@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Usage: bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/nftables/nft-nat.sh)
-# Wiki: debian buster nftables https://wiki.archlinux.org/index.php/Nftables
+## Wiki: debian buster nftables https://wiki.archlinux.org/index.php/Nftables
 
 # 说明
 [ 0 -eq 1 ] && {
