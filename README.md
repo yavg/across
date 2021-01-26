@@ -1,6 +1,6 @@
 ### Some scripts collection  for Debian
 ```bash
-apt update && apt install curl vim wget -y
+apt update && apt install apt-transport-https ca-certificates curl vim wget -y
 ```  
 ---  
 #### security ssh  
