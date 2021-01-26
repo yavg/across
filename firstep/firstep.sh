@@ -20,7 +20,7 @@ cat /etc/apt/sources.list | grep -q "$backports_version" || echo -e "deb http://
 # apt install 
 apt update
 apt install apt-transport-https ca-certificates curl vim wget -y
-apt -t buster-backports install nftables -y
+apt -t $backports_version install nftables -y
 
 # timezone
 timedatectl set-timezone Asia/Shanghai
