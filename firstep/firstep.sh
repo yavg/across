@@ -17,6 +17,3 @@ cat /etc/apt/sources.list | grep -q "$backports_version" || echo -e "deb http://
 # apt install 
 apt update
 apt install apt-transport-https ca-certificates curl vim wget -y
-
-# security ssh
-curl https://raw.githubusercontent.com/mixool/across/master/ssh/securityssh.sh | bash
