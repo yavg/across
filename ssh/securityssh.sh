@@ -21,7 +21,7 @@ done
 
 # active
 echo; echo "$(date) waiting custom confirm..."; echo "port: ${SSH_PORT}"; echo "rsa_pub_key: ${RSA_PUB_KEY}"
-echo; read -p "is_confirm? [y/n]" is_confirm
+echo; read -p "is_confirm? [y/n]" is_confirm </dev/tty
 if [[ ${is_confirm} == "y" || ${is_confirm} == "Y" ]]; then
     # backup config
     bakname=$(date +%N) && cp /etc/ssh/sshd_config /etc/ssh/sshd_config_$bakname
