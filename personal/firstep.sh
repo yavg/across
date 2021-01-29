@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin; export PATH
-# Usage: bash <(wget -qO- https://raw.githubusercontent.com/mixool/across/master/firstep/firstep.sh)
+# Usage: bash <(wget -qO- https://raw.githubusercontent.com/mixool/across/master/personal/firstep.sh)
 
 # only root can run this script
 [[ $EUID -ne 0 ]] && echo "Error, This script must be run as root!" && exit 1
