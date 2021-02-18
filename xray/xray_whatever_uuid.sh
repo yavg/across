@@ -39,7 +39,7 @@ cat <<EOF >/usr/local/etc/xray/config.json
                     {"dest": 50003,"path": "/$shadowsockspath"}
                 ]
             },
-            "streamSettings": {"network": "tcp","security": "xtls","xtlsSettings": {"alpn": ["h2","http/1.1"],"certificates": [{"certificateFile": "/usr/local/etc/xray/xray.crt","keyFile": "/usr/local/etc/xray/xray.key"}]}}
+            "streamSettings": {"network": "tcp","security": "xtls","xtlsSettings": {"alpn": ["h2","http/1.1"],"minVersion": "1.2","ocspStapling": 3600,"certificates": [{"certificateFile": "/usr/local/etc/xray/xray.crt","keyFile": "/usr/local/etc/xray/xray.key"}]}}
         },
         {
             "listen": "@trojan","protocol": "trojan",
