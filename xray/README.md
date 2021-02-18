@@ -7,8 +7,5 @@ bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/xray/xray_
 ```
 * 卸载:
 ```bash
-apt purge caddy -y
-bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ remove --purge
-/root/.acme.sh/acme.sh --uninstall; rm -rf /root/.acme.sh
-#bash <(curl https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) --remove; systemctl disable v2ray; systemctl stop v2ray; rm -rf /usr/local/etc/v2ray /var/log/v2ray
+bash <(curl -s https://raw.githubusercontent.com/mixool/across/master/xray/xray_whatever_uuid.sh) remove_purge
 ```
