@@ -37,7 +37,7 @@ function config_xray_caddy(){
     wget -O /usr/local/etc/xray/config.json $configxray
     sed -i -e "s/\$uuid/$uuid/g" -e "s/\$xtlsflow/$xtlsflow/g" -e "s/\$ssmethod/$ssmethod/g" -e "s/\$trojanpath/$trojanpath/g" -e "s/\$vlesspath/$vlesspath/g" \
            -e "s/\$vlessh2path/$vlessh2path/g" -e "s/\$vmesstcppath/$vmesstcppath/g" -e "s/\$vmesswspath/$vmesswspath/g" -e "s/\$vmessh2path/$vmessh2path/g" \
-           -e "s/\$shadowsockspath/$shadowsockspath/g" /usr/local/etc/xray/config.json
+           -e "s/\$shadowsockspath/$shadowsockspath/g" -e "s/\$domain/$domain/g" /usr/local/etc/xray/config.json
     # caddyconfig
     wget -qO- $configcaddy | sed -e "s/\$domain/$domain/g" -e "s/\$uuid/$uuid/g" -e "s/\$vlessh2path/$vlessh2path/g" -e "s/\$vmessh2path/$vmessh2path/g" >/etc/caddy/Caddyfile.json
 }
